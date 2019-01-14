@@ -1,3 +1,5 @@
+rclone config
+
 echo "(n)ew"
 echo "threatdrive"
 echo "12"
@@ -12,11 +14,13 @@ echo "(n)o - not a team drive"
 echo "(y)es this is okay"
 echo "(q)uit"
 
-rclone config
 
 
-rclone sync ~/datasets/shooting threatdrive:/Threat_Detection/shooting/ -v
 
 
-sudo apt install gthumb
+sudo apt install -y gthumb
 
+
+
+
+rclone sync ~/datasets/shooting/ threatdrive:/Threat_Detection/datasets/shooting/ -v
