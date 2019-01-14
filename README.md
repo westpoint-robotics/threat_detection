@@ -14,8 +14,10 @@
 
 	https://azure.microsoft.com/en-us/try/cognitive-services/?api=bing-image-search-api
 
+![Open Project](https://github.com/westpoint-robotics/threat_detection/blob/master/git_ref/get_api_key.jpg)
 
-	![Open Project](https://github.com/westpoint-robotics/threat_detection/git_ref/api_keys.jpg)
+![Open Project](https://github.com/westpoint-robotics/threat_detection/blob/master/git_ref/api_keys.jpg)
+
 
 
 
