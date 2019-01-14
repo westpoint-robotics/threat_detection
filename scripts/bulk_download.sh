@@ -17,3 +17,8 @@ tar xf pistol.tar
 tar xf pistol_in_hand.tar
 tar xf rifle.tar
 tar xf shooting.tar
+
+
+
+
+
