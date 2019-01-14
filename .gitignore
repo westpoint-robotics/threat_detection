@@ -1,5 +1,12 @@
-# Datasets
+# Images / Datasets 
 azure/datasets/
+YOLOtools/Examples
+YOLOtools/Images
+YOLOtools/Video_Files
+*.jpg
+*.jpeg
+*.gif
+*.png
 
 # Prerequisites
 *.d
@@ -33,3 +40,4 @@ azure/datasets/
 *.exe
 *.out
 *.app
+
