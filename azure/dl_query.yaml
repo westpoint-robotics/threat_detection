@@ -1,0 +1,5 @@
+# yaml lookup not configured yet 20190114
+MAX_RESULTS: 250
+GROUP_SIZE: 50
+QUERY: rifle
+OUTPUT: /datasets/rifle

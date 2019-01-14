@@ -1,8 +1,7 @@
 # Code downloaded from here: https://www.pyimagesearch.com/2018/04/09/how-to-quickly-build-a-deep-learning-image-dataset/
 # 
-# mkdir -p ~/threat_detection/azure/rifle && cd ~/threat_detection
-# git init && git remote add gh git@github.com:westpoint-robotics/threat_detection.git && git pull gh master
-# python dl_query.py --query "rifle" --output azure/rifle
+# mkdir -p ~/threat_detection/azure/datasets/shooting
+# cd ~/threat_detection/azure && python dl_query.py --api $AZURE_KEY_1 --query "shooting" --output datasets/shooting
 
 
 # import the necessary packages
@@ -14,16 +13,15 @@ import os
  
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
-ap.add_argument("-q", "--query", required=True,
-	help="search query to search Bing Image API for")
-ap.add_argument("-o", "--output", required=True,
-	help="path to output directory of images")
+ap.add_argument("-a", "--api",    required=True, help="api key for using bing cognitive services")
+ap.add_argument("-q", "--query",  required=True, help="search query to search Bing Image API for")
+ap.add_argument("-o", "--output", required=True, help="path to output directory of images")
 args = vars(ap.parse_args())
 
 # set your Microsoft Cognitive Services API key along with (1) the
 # maximum number of results for a given search and (2) the group size
 # for results (maximum of 50 per request)
-API_KEY = "8958aa2948bd42b684b9c78ba4fcd8d7"
+API_KEY = args["api"]
 MAX_RESULTS = 250
 GROUP_SIZE = 50
  

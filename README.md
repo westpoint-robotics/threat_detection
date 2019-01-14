@@ -1,4 +1,4 @@
-# threat_detection
+# Requirements
 This assumes you are running ubuntu 16.04
 
 # Installation
@@ -9,6 +9,6 @@ This assumes you are running ubuntu 16.04
 
 # Download images from bing/azure
 	
-To download new images or make a new dataset follow instructions [here](https://github.com/westpoint-robotics/threat_detection/tree/master/azure)
+To download new images for making a new dataset follow instructions [here](https://github.com/westpoint-robotics/threat_detection/tree/master/azure)
 
 # Usage
