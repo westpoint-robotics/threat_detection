@@ -1,7 +1,7 @@
 # Code downloaded from here: https://www.pyimagesearch.com/2018/04/09/how-to-quickly-build-a-deep-learning-image-dataset/
 # 
-# mkdir -p ~/threat_detection/azure/datasets/shooting
-# cd ~/threat_detection/azure && python dl_query.py --api $AZURE_KEY_1 --query "shooting" --output datasets/shooting
+# mkdir -p ~/datasets/shooting
+# cd ~/threat_detection/azure && python dl_query.py --api $AZURE_KEY_1 --query "shooting" --output ~/datasets/shooting
 
 
 # import the necessary packages
@@ -19,8 +19,7 @@ ap.add_argument("-o", "--output", required=True, help="path to output directory 
 args = vars(ap.parse_args())
 
 # set your Microsoft Cognitive Services API key along with (1) the
-# maximum number of results for a given search and (2) the group size
-# for results (maximum of 50 per request)
+# maximum number of results for a given search and (2) the group size for results (maximum of 50 per request)
 API_KEY = args["api"]
 MAX_RESULTS = 250
 GROUP_SIZE = 50
@@ -28,14 +27,10 @@ GROUP_SIZE = 50
 # set the endpoint API URL
 URL = "https://api.cognitive.microsoft.com/bing/v7.0/images/search"
 
-# when attempting to download images from the web both the Python
-# programming language and the requests library have a number of
-# exceptions that can be thrown so let's build a list of them now
-# so we can filter on them
+# when attempting to download images from the web both the Python programming language and the requests library have a number of  exceptions that can be thrown so let's build a list of them now so we can filter on them
 EXCEPTIONS = set([IOError, exceptions.RequestException, exceptions.HTTPError, exceptions.ConnectionError, exceptions.Timeout])
 
-# store the search term in a convenience variable then set the
-# headers and search parameters
+# store the search term in a convenience variable then set the headers and search parameters
 term = args["query"]
 headers = {"Ocp-Apim-Subscription-Key" : API_KEY}
 params = {"q": term, "offset": 0, "count": GROUP_SIZE}
@@ -45,8 +40,7 @@ print("[INFO] searching Bing API for '{}'".format(term))
 search = requests.get(URL, headers=headers, params=params)
 search.raise_for_status()
  
-# grab the results from the search, including the total number of
-# estimated results returned by the Bing API
+# grab the results from the search, including the total number of estimated results returned by the Bing API
 results = search.json()
 estNumResults = min(results["totalEstimatedMatches"], MAX_RESULTS)
 print("[INFO] {} total results for '{}'".format(estNumResults, term))
@@ -56,16 +50,13 @@ total = 0
 
 # loop over the estimated number of results in `GROUP_SIZE` groups
 for offset in range(0, estNumResults, GROUP_SIZE):
-	# update the search parameters using the current offset, then
-	# make the request to fetch the results
-	print("[INFO] making request for group {}-{} of {}...".format(
-		offset, offset + GROUP_SIZE, estNumResults))
+	# update the search parameters using the current offset, then make the request to fetch the results
+	print("[INFO] making request for group {}-{} of {}...".format(offset, offset + GROUP_SIZE, estNumResults))
 	params["offset"] = offset
 	search = requests.get(URL, headers=headers, params=params)
 	search.raise_for_status()
 	results = search.json()
-	print("[INFO] saving images for group {}-{} of {}...".format(
-		offset, offset + GROUP_SIZE, estNumResults))
+	print("[INFO] saving images for group {}-{} of {}...".format(offset, offset + GROUP_SIZE, estNumResults))
 
 	# loop over the results
 	for v in results["value"]:
@@ -77,19 +68,16 @@ for offset in range(0, estNumResults, GROUP_SIZE):
  
 			# build the path to the output image
 			ext = v["contentUrl"][v["contentUrl"].rfind("."):]
-			p = os.path.sep.join([args["output"], "{}{}".format(
-				str(total).zfill(8), ext)])
+			p = os.path.sep.join([args["output"], "{}{}".format(str(total).zfill(8), ext)])
  
 			# write the image to disk
 			f = open(p, "wb")
 			f.write(r.content)
 			f.close()
  
-		# catch any errors that would not unable us to download the
-		# image
+		# catch any errors that would not unable us to download the image
 		except Exception as e:
-			# check to see if our exception is in our list of
-			# exceptions to check for
+			# check to see if our exception is in our list of exceptions to check for
 			if type(e) in EXCEPTIONS:
 				print("[INFO] skipping: {}".format(v["contentUrl"]))
 				continue
@@ -97,8 +85,7 @@ for offset in range(0, estNumResults, GROUP_SIZE):
 		# try to load the image from disk
 		image = cv2.imread(p)
  
-		# if the image is `None` then we could not properly load the
-		# image from disk (so it should be ignored)
+		# if the image is `None` then we could not properly load the image from disk (so it should be ignored)
 		if image is None:
 			print("[INFO] deleting: {}".format(p))
 			os.remove(p)
