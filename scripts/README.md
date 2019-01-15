@@ -3,6 +3,7 @@
 from [google drive](https://drive.google.com/open?id=1Cd_Mgsizt5lGyaqiPWgm44PDH4sBmsYw)
 
 ## Download automatically using :
+(This will only work if you are me, it requires access to my google drive)
 
 	cd ~/threat_detection/scripts
 	. install_rclone.sh
