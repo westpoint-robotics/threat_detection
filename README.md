@@ -10,7 +10,8 @@ This assumes you are running ubuntu 16.04
 
 # Datasets
 ## Download our dataset
-https://drive.google.com/drive/folders/1Uk0XKqRjmAYLy1X2HzKTRuzTcYlW2Mma
+[Download here](https://github.com/westpoint-robotics/threat_detection/tree/master/scripts)
+
 
 ## Creating a new dataset
 To download new images for making a new dataset follow instructions [here](https://github.com/westpoint-robotics/threat_detection/tree/master/azure)

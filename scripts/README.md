@@ -1,12 +1,13 @@
 # Download our dataset
-Download manually from [google drive](https://drive.google.com/open?id=1Cd_Mgsizt5lGyaqiPWgm44PDH4sBmsYw)
+## Download manually 
+from [google drive](https://drive.google.com/open?id=1Cd_Mgsizt5lGyaqiPWgm44PDH4sBmsYw)
 
-Download automatically using :
+## Download automatically using :
 
 	cd ~/threat_detection/scripts
 	. install_rclone.sh
 
-When propmted at decsion points during unstallation, using these configurations should make other scripts in this repo function properly:
+### When prompted at decision points during installation, using these configurations should make other scripts in this repo function properly:
 	
 	echo "(n)ew"
 	echo "threatdrive"
@@ -21,3 +22,8 @@ When propmted at decsion points during unstallation, using these configurations 
 	echo "(n)o - not a team drive"
 	echo "(y)es this is okay"
 	echo "(q)uit"
+
+
+### using rclone, download datasets and unzip them
+
+	bash ./bulk_download.sh

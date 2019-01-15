@@ -8,6 +8,7 @@ rclone sync threatdrive:/Threat_Detection/datasets/pistol.tar ~/datasets -v
 rclone sync threatdrive:/Threat_Detection/datasets/pistol_in_hand.tar ~/datasets -v
 rclone sync threatdrive:/Threat_Detection/datasets/rifle.tar ~/datasets -v
 rclone sync threatdrive:/Threat_Detection/datasets/shooting.tar ~/datasets -v
+rclone sync threatdrive:/Threat_Detection/datasets/pistol_yolo.tar ~/datasets -v
 
 tar xf assault_rifle.tar
 tar xf automatic_rifle.tar
@@ -17,7 +18,7 @@ tar xf pistol.tar
 tar xf pistol_in_hand.tar
 tar xf rifle.tar
 tar xf shooting.tar
-
+tar xf pistol_yolo.tar
 
 
 
