@@ -28,3 +28,15 @@ from [google drive](https://drive.google.com/open?id=1Cd_Mgsizt5lGyaqiPWgm44PDH4
 ### using rclone, download datasets and unzip them
 
 	bash ./bulk_download.sh
+
+
+# To use undupe library
+You may need to create a number of folders and directories to use the undupe script.  Call using
+
+	python UH.py
+
+This loads images, scales them down to 10,000 square pixels, then computes ransac homographies to check if images are similar.
+
+	sudo apt install python3-pip
+	pip install opencv-python --user
+	pip install scikit-image --user
