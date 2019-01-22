@@ -9,7 +9,10 @@ tar -cvf pistol_in_hand.tar pistol_in_hand/*
 tar -cvf rifle.tar rifle/* 
 tar -cvf shooting.tar shooting/* 
 
-tar -cvf pistol_yolo.tar pistol_yolo/* 
+tar -cvf pistol_yolo.tar pistol_yolo/* cd ~/datasets
+
+
+tar -cvf pistol_labeled.tar labeled/pistol_yolo/* 
 
 
 rclone sync ~/datasets/assault_rifle.tar threatdrive:/Threat_Detection/datasets/ -v
@@ -22,3 +25,5 @@ rclone sync ~/datasets/rifle.tar threatdrive:/Threat_Detection/datasets/ -v
 rclone sync ~/datasets/shooting.tar threatdrive:/Threat_Detection/datasets/ -v
 
 rclone sync ~/datasets/pistol_yolo.tar threatdrive:/Threat_Detection/datasets/ -v
+
+rclone sync ~/datasets/pistol_labeled.tar threatdrive:/Threat_Detection/datasets/ -v

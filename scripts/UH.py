@@ -83,11 +83,12 @@ def main():
             if (max(ratio_by_dir)>unique_ssID): 
                 # then move to correct dupe folder
                 # print('  move(' + cfg['check_images']+unsorted_list[0] + ', ' + list_of_dirs[ratio_by_dir.index(max(ratio_by_dir))]+ '/' +unsorted_list[0] + ')')
-                print('  match found in ' + list_of_dirs[ratio_by_dir.index(max(ratio_by_dir))])
+                # print('  ssID = {}.match found in ' + list_of_dirs[ratio_by_dir.index(max(ratio_by_dir))])
+                print('  ssID = {}, match found in {}').format(max(ratio_by_dir), list_of_dirs[ratio_by_dir.index(max(ratio_by_dir))])
                 move(cfg['check_images']+unsorted_list[0],list_of_dirs[ratio_by_dir.index(max(ratio_by_dir))]+ '/' +unsorted_list[0])
                 new_path = list_of_dirs[ratio_by_dir.index(max(ratio_by_dir))]
             else:
-                print('  match found in ' + cfg['uniques_path'])
+                print('  ssID = {}, match found in {}').format(unique_ssID,cfg['uniques_path'])
                 # make new dupe folder with old unique and new check image
                 newdir = cfg['possible_dupes_root']+'set'+str(len(dupes_folders)+1) 
                 # print('mkdir(' + newdir  + ')' )

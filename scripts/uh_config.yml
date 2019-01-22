@@ -1,14 +1,14 @@
 # threshold below which images are probably disparate
-estimation_threshhold: 0.8
+estimation_threshhold: 0.9
 
 # if the ssID result is higher than this, stop checking other images, a duplicate has been found
-break_threshhold: 0.95
+break_threshhold: 0.97
 
 # directory of folder with potentially duplicate images
-check_images: /home/benjamin/datasets/pistol_in_hand_resized/
+check_images: /home/benjamin/datasets/googleimages/pistol_in_hand/jpg/
 
 # where to put images that are unique
-uniques_path: /home/benjamin/datasets/unique/pistol_in_hand_resized/
+uniques_path: /home/benjamin/datasets/googleimages/pistol_in_hand/unique/
 
 # Where to put folders of possible duplicates
-possible_dupes_root: /home/benjamin/datasets/possible_dupes/pistol_in_hand_resized/
+possible_dupes_root: /home/benjamin/datasets/googleimages/pistol_in_hand/possible_dupes/

@@ -1,0 +1,8 @@
+# directory of folder with original file name
+original_path: /home/benjamin/datasets/googleimages/pistol_in_hand/downloads/
+
+# where to put renamed images
+renamed_path: /home/benjamin/datasets/googleimages/pistol_in_hand/jpg/
+
+renamed_prefix: pistol_in_hand_
+

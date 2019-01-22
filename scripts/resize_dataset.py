@@ -9,7 +9,7 @@ import numpy as np
 # from uH_lib import * # my libraries
 
 def readImage(filename):
-    img = cv2.imread(filename, 0)
+    img = cv2.imread(filename)
     if img is None:
         print('Invalid image:' + filename)
         return None
@@ -18,14 +18,16 @@ def readImage(filename):
         h = img.shape[0]
         w = img.shape[1]
         a = h*w
-        scale = math.sqrt((480000)/float(a))  #(600*800=480000)
-        sh = int(math.floor(h*scale))
-        sw = int(math.floor(w*scale))
-        img2 = cv2.resize(img,(sw,sh), interpolation = cv2.INTER_AREA)
-        
-        kernel = np.ones((3,3),np.float32)/9
-        gausimg = cv2.filter2D(img2,-1,kernel)
-        return gausimg
+        if a > 480000:
+            scale = math.sqrt((480000)/float(a))  #(600*800=480000)
+            sh = int(math.floor(h*scale))
+            sw = int(math.floor(w*scale))
+            img2 = cv2.resize(img,(sw,sh), interpolation = cv2.INTER_AREA)
+            kernel = np.ones((3,3),np.float32)/9
+            gausimg = cv2.filter2D(img2,-1,kernel)
+            return gausimg
+        else:
+            return img
 
 def main():
 
