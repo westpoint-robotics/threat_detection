@@ -1,8 +1,9 @@
-# directory of folder with original file name
-original_path: /home/benjamin/datasets/googleimages/pistol_in_hand/downloads/
+# directory of folder with original file name (ends with '/')
+original_path: /home/benjamin/datasets/pistol600/jpg/
 
-# where to put renamed images
-renamed_path: /home/benjamin/datasets/googleimages/pistol_in_hand/jpg/
+# where to put renamed images (ends with '/')
+renamed_path: /home/benjamin/datasets/pistol600/unsorted/
 
-renamed_prefix: pistol_in_hand_
+# numebrs will be appended, suggests ends with '_'
+renamed_prefix: unsorted_pistol_
 
