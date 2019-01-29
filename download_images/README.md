@@ -36,8 +36,11 @@ After you have created your account and found your api keys run these commands: 
 	echo "export AZURE_KEY_2=[API_Key2]" >> ~/.bashrc
 
 ## Usage
+	
+	cd ~/threat_detection/azure
+	mkdir -p ~/datasets/automatic_rifle &&  python dl_query.py --api $AZURE_KEY_1 --query "automatic rifle" --output ~/datasets/automatic_rifle
 
-## Prune
+# Pruning
 Not all images will actually be relevant to the query you intended.  There will be some touch work needed to prune the images you do not want.
 
 
