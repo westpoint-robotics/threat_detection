@@ -1,6 +1,5 @@
 # Google Image Downloader
-
-	https://github.com/hardikvasa/google-images-download
+Source code is here: https://github.com/hardikvasa/google-images-download
 
 	pip install google_images_download --user ## downloads the python script
 
