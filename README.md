@@ -1,7 +1,7 @@
 # Requirements
-This assumes you are running ubuntu 16.04
+This assumes you are running ubuntu 16.04 and already have darknet/yolo installed.  The regular version of darknet/yolo can either be downloaded by following the instrucitons [here](https://pjreddie.com/darknet/yolo/), or from the westpoint-robotics repo [here](https://github.com/westpoint-robotics/darknet-yolov3).  For the ROS integrated yolo, our local repo is [here](https://github.com/westpoint-robotics/darknet-yolov3-ros).
 
-# Installation
+# Installation of threat detection module
 	
 	mkdir -p ~/threat_detection/azure/rifle && cd ~/threat_detection
 	
