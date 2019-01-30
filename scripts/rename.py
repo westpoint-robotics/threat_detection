@@ -27,6 +27,11 @@ def main():
         # copyfile(current_name, new_name) 
 
         img = cv2.imread(current_name)
+
+        # cv2.imshow('image',img)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
+
         cv2.imwrite(new_name,img)
         unnamed_list.remove(unnamed_list[0])
 
