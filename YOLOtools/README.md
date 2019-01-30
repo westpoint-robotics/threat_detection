@@ -6,9 +6,9 @@ mkdir -p ~/threat_detection/YOLOtools/Images/002
 cp all/your/unlabeled/image ~/threat_detection/YOLOtools/Images/002
 
 #### (Optional) Use these scripts to tweak your images before putting them in the ../Images/0XX folder
-Use the rename.py [script](https://github.com/westpoint-robotics/threat_detection/tree/master/scripts) to serialize images and convert them all to jpg. 
+Use the [rename.py](https://github.com/westpoint-robotics/threat_detection/tree/master/scripts) script to serialize images and convert them all to jpg. 
 
-Use resize.py to scale images down to better fit on the screen during labeling.  
+Use [resize.py](https://github.com/westpoint-robotics/threat_detection/tree/master/scripts) to scale images down to better fit on the screen during labeling.  
 
 #### Run Main python script 
 	python main.py
@@ -19,10 +19,9 @@ When the window opens, type the folder name that contains the unlabeled images (
 
 
 #### Run convert python file for create final text file for yolo images 
+This will generate a series of text files associated with the topleft and bottom right bounding box label, which needs to be converted to the yolo format:
+
 	python convert.py
-
-
-
 
 # Errors
 If you get this error when running main.py:
