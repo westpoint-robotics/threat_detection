@@ -1,4 +1,5 @@
-# YOLO-Annotation-Tool (forked from [here](https://github.com/westpoint-robotics/threat_detection/tree/master/scripts) )
+# YOLO-Annotation-Tool 
+(forked from [here](https://github.com/westpoint-robotics/threat_detection/tree/master/scripts) )
 ## This is for creating the training set of images for YOLO
 #### Create 001 folder in Images folder and put your class one images
 mkdir -p ~/threat_detection/YOLOtools/Images/002
@@ -14,7 +15,7 @@ Use resize.py to scale images down to better fit on the screen during labeling.
 
 When the window opens, type the folder name that contains the unlabeled images (it should be something like "001", "002", etc.)
 
-![Open Project](https://github.com/westpoint-robotics/threat_detection/tree/master/YOLOtools/readme_figs/LabelingTool.png)
+![Open Project](https://github.com/westpoint-robotics/threat_detection/tree/master/YOLOtools/readme_figs/labelingtool_000001.jpg)
 
 #### Run convert python file for create final text file for yolo images 
 	python convert.py

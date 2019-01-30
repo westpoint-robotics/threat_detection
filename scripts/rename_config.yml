@@ -1,9 +1,11 @@
 # directory of folder with original file name (ends with '/')
-original_path: /home/benjamin/datasets/pistol600/jpg/
+# original_path: /home/benjamin/datasets/pistol600/jpg/
+original_path: /home/benjamin/threat_detection/YOLOtools/readme_figs
 
 # where to put renamed images (ends with '/')
-renamed_path: /home/benjamin/datasets/pistol600/unsorted/
+# renamed_path: /home/benjamin/datasets/pistol600/unsorted/
+renamed_path: /home/benjamin/threat_detection/YOLOtools/
 
-# numebrs will be appended, suggests ends with '_'
-renamed_prefix: unsorted_pistol_
+# numbers will be appended, suggests ends with '_'
+renamed_prefix: labelingtool_
 
