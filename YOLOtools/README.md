@@ -20,22 +20,6 @@ When the window opens, type the folder name that contains the unlabeled images (
 	python convert.py
 
 
-## Bash cruft
-
-ls *.{png,gif}
-
-for file in *.JPG
-do
-  echo "$file"
-  mv "$file" "${file/.JPG/.jpg}"
-done
-
-
-for file in *.{png,gif}
-do
-  echo "$file"
-  # mv "$file" "${file/.JPG/.jpg}"
-done
 
 
 # Errors
@@ -49,3 +33,21 @@ If you get this error when running main.py:
 run this: 
 
 	sudo apt-get install -y python-imaging python-imaging-tk
+
+
+## Bash cruft
+
+	ls *.{png,gif}
+
+	for file in *.JPG
+	do
+		echo "$file"
+		mv "$file" "${file/.JPG/.jpg}"
+	done
+
+
+	for file in *.{png,gif}
+	do
+		echo "$file"
+		# mv "$file" "${file/.JPG/.jpg}"
+	done
