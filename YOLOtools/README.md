@@ -1,44 +1,26 @@
-# YOLO-Annotation-Tool
+# YOLO-Annotation-Tool (forked from [here](https://github.com/westpoint-robotics/threat_detection/tree/master/scripts) )
 ## This is for creating the training set of images for YOLO
+#### Create 001 folder in Images folder and put your class one images
+mkdir -p ~/threat_detection/YOLOtools/Images/002
+cp all/your/unlabeled/image ~/threat_detection/YOLOtools/Images/002
 
-###### Commands on terminal:
-```
-git clone https://github.com/ManivannanMurugavel/YOLO-Annotation-Tool.git
+#### (Optional) Use these scripts to tweak your images before putting them in the ../Images/0XX folder
+Use the rename.py [script](https://github.com/westpoint-robotics/threat_detection/tree/master/scripts) to serialize images and convert them all to jpg. 
 
-cd YOLO-Annotation-Tool
-```
-### Create 001 folder in Images folder and put your class one images
+Use resize.py to scale images down to better fit on the screen during labeling.  
 
-### Convert to .JPEG from any type of images. Use this command(Ubuntu)
+#### Run Main python script 
+	python main.py
 
-	sudo apt-get -y install imagemagick
+When the window opens, type the folder name that contains the unlabeled images (it should be something like "001", "002", etc.)
 
-	mogrify -format jpg *.jpg*
-	
-	mogrify -format jpg *.jpeg
+![Open Project](https://github.com/westpoint-robotics/threat_detection/tree/master/YOLOtools/readme_figs/LabelingTool.png)
 
-	mogrify -format jpg *.JPG
-
-
+#### Run convert python file for create final text file for yolo images 
+	python convert.py
 
 
-```mogrify -format jpg *.JPEG```
-or
-```mogrify -format jpg *.jpeg```
-or
-```mogrify -format jpg *.png```
-
-### Run Main python script 
-
- ``` python main.py ```
-
-### Run convert python file for create final text file for yolo images 
-
-```python convert.py```
-# -------Progress-------
-
-
-# Bash cruft
+## Bash cruft
 
 ls *.{png,gif}
 

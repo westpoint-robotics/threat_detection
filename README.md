@@ -17,3 +17,4 @@ This assumes you are running ubuntu 16.04 and already have darknet/yolo installe
 To download new images for making a new dataset follow instructions [here](https://github.com/westpoint-robotics/threat_detection/tree/master/download_images)
 
 # Usage
+TBD.  We're still working on this aspect.

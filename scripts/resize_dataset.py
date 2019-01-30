@@ -8,7 +8,7 @@ import numpy as np
 
 # from uH_lib import * # my libraries
 
-def readImage(filename):
+def readImage(filename, max_area):
     img = cv2.imread(filename)
     if img is None:
         print('Invalid image:' + filename)
@@ -18,8 +18,8 @@ def readImage(filename):
         h = img.shape[0]
         w = img.shape[1]
         a = h*w
-        if a > 480000:
-            scale = math.sqrt((480000)/float(a))  #(600*800=480000)
+        if a > max_area:
+            scale = math.sqrt((max_area)/float(a))  #(600*800=480000)
             sh = int(math.floor(h*scale))
             sw = int(math.floor(w*scale))
             img2 = cv2.resize(img,(sw,sh), interpolation = cv2.INTER_AREA)
@@ -38,6 +38,7 @@ def main():
     print("Output dir: {} ").format(cfg['resized_path'])
 
     original_datasets_path= cfg['original_path']
+    
 
     # walk 'unique' for renamable list
     original_list = []
@@ -48,7 +49,7 @@ def main():
     for image in original_list:
         image_path = cfg['original_path'] + image
         # print("image_path : {}").format(image_path)
-        smaller_image = readImage(image_path)
+        smaller_image = readImage(image_path, cfg['max_area'])
         # print("output image: {}").format(cfg['resized_path'] + image[:-4]+'.jpg')
         cv2.imwrite(cfg['resized_path'] + image[:-4]+'.jpg',smaller_image)
 

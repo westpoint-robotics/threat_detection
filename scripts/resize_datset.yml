@@ -1,2 +1,3 @@
+max_area: 480000 #(600*800=480000) this will scale images to be a maximum of 600*800, this helps with labeling with bounding boxes
 original_path: /home/benjamin/datasets/pistol500_yolo_unlabeled/Images/002_original/
 resized_path: /home/benjamin/datasets/pistol500_yolo_unlabeled/Images/002_resized/

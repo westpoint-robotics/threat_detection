@@ -41,8 +41,13 @@ After you have created your account and found your api keys run these commands: 
 	mkdir -p ~/datasets/automatic_rifle &&  python dl_query.py --api $AZURE_KEY_1 --query "automatic rifle" --output ~/datasets/automatic_rifle
 
 # Pruning
-Not all images will actually be relevant to the query you intended.  There will be some touch work needed to prune the images you do not want.
+Not all images will actually be relevant to the query you intended; there will be some touch work needed to prune the images you do not want.  I created a [duplicate detector](https://github.com/westpoint-robotics/threat_detection/tree/master/scripts) python script which can be used to find duplicates.  It is slow because it was written to use RANSAC to find a homography between two images, so it does not scale well with large libraries of images. The directories that it uses and the threshold parameters are defined in the uh_config.yml file.
 
+# Labeling
+We are using the YOLO-Annotation-Tool to trace bounding boxes around our datasets.
+
+
+https://github.com/westpoint-robotics/threat_detection/tree/master/YOLOtools
 
 
 
