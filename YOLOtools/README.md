@@ -15,7 +15,9 @@ Use resize.py to scale images down to better fit on the screen during labeling.
 
 When the window opens, type the folder name that contains the unlabeled images (it should be something like "001", "002", etc.)
 
-![Open Project](https://github.com/westpoint-robotics/threat_detection/tree/master/YOLOtools/readme_figs/labelingtool_000001.jpg)
+![Open Project](https://github.com/westpoint-robotics/threat_detection/blob/master/readme_figs/labelingtool_000001.jpg)
+# ![Open Project](https://github.com/westpoint-robotics/threat_detection/blob/master/git_ref/get_api_key.jpg)
+
 
 #### Run convert python file for create final text file for yolo images 
 	python convert.py
