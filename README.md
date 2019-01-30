@@ -17,5 +17,13 @@ To download new images for making a new dataset follow instructions [here](https
 To label new class, follow instructions [here](https://github.com/westpoint-robotics/threat_detection/tree/master/YOLOtools)
 
 # Usage
-TBD.  We're still working on this part.
+TBD.  We are still working on this part.
 
+## Ros packages to install:
+	https://github.com/benjaminabruzzo/stop
+	https://github.com/westpoint-robotics/usma_ardrone
+	https://github.com/westpoint-robotics/darknet-yolov3-ros
+
+## Testing weights and config using ROS and AR.Drone Camera:
+	roslaunch optitrack_controller ardrone.launch
+	roslaunch darknet_ros yolo_pistols.launch
