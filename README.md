@@ -30,4 +30,23 @@ TBD.  We are still working on this part.
 
 
 # Downloading pose caffemodels
-cd ~/threat_detection && . /pose_detection/pose_models/getModels.sh 
+
+	cd ~/threat_detection && . /pose_detection/pose_models/getModels.sh 
+
+
+# Using virtual environments for python
+
+	sudo pip install virtualenv virtualenvwrapper
+	sudo rm -rf ~/.cache/pip
+
+	echo 'export WORKON_HOME=$HOME/.virtualenvs' >> ~/.bashrc
+	echo 'source /usr/local/bin/virtualenvwrapper.sh' >> ~/.bashrc
+	
+	mkvirtualenv cvn
+
+
+	cd ~ && git clone git@github.com:opencv/opencv.git && cd opencv && git checkout 3.0.0
+
+	mkdir -p ~/opencv/opencv/build
+	cd ~/opencv/opencv/build
+	cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D INSTALL_C_EXAMPLES=OFF -D INSTALL_PYTHON_EXAMPLES=ON -D OPENCV_EXTRA_MODULES_PATH=~/opencv_contrib/modules -D BUILD_EXAMPLES=ON ..

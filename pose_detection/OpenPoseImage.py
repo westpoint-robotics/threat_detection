@@ -1,8 +1,3 @@
-import sys
-del sys.path[2]
-sys.path[1] = '/usr/local/lib/python3.5/dist-packages'
-
-# Code form : https://www.learnopencv.com/deep-learning-based-human-pose-estimation-using-opencv-cpp-python/
 import cv2
 import time
 import numpy as np
@@ -10,32 +5,33 @@ import numpy as np
 MODE = "COCO"
 
 if MODE is "COCO":
-    protoFile = "pose_models/pose/coco/pose_deploy_linevec.prototxt"
-    weightsFile = "pose_models/pose/coco/pose_iter_440000.caffemodel"
+    protoFile = "pose/coco/pose_deploy_linevec.prototxt"
+    weightsFile = "pose/coco/pose_iter_440000.caffemodel"
     nPoints = 18
     POSE_PAIRS = [ [1,0],[1,2],[1,5],[2,3],[3,4],[5,6],[6,7],[1,8],[8,9],[9,10],[1,11],[11,12],[12,13],[0,14],[0,15],[14,16],[15,17]]
+
 elif MODE is "MPI" :
-    protoFile = "pose_models/pose/mpi/pose_deploy_linevec_faster_4_stages.prototxt"
-    weightsFile = "pose_models/pose/mpi/pose_iter_160000.caffemodel"
+    protoFile = "pose/mpi/pose_deploy_linevec_faster_4_stages.prototxt"
+    weightsFile = "pose/mpi/pose_iter_160000.caffemodel"
     nPoints = 15
     POSE_PAIRS = [[0,1], [1,2], [2,3], [3,4], [1,5], [5,6], [6,7], [1,14], [14,8], [8,9], [9,10], [14,11], [11,12], [12,13] ]
 
-# Read image
-frame = cv2.imread("images/pistol04.jpg")
+
+frame = cv2.imread("single.jpeg")
 frameCopy = np.copy(frame)
 frameWidth = frame.shape[1]
 frameHeight = frame.shape[0]
 threshold = 0.1
-inHeight, inWidth = frame.shape[:2]
 
-# Read the network into Memory
 net = cv2.dnn.readNetFromCaffe(protoFile, weightsFile)
 
-# Prepare the frame to be fed to the network
 t = time.time()
-inpBlob = cv2.dnn.blobFromImage(frame, 1.0 / 255, (inWidth, inHeight), (0, 0, 0), swapRB=False, crop=False)
- 
-# Set the prepared object as the input blob of the network
+# input image dimensions for the network
+inWidth = 368
+inHeight = 368
+inpBlob = cv2.dnn.blobFromImage(frame, 1.0 / 255, (inWidth, inHeight),
+                          (0, 0, 0), swapRB=False, crop=False)
+
 net.setInput(inpBlob)
 
 output = net.forward()
@@ -87,5 +83,4 @@ cv2.imwrite('Output-Skeleton.jpg', frame)
 print("Total time taken : {:.3f}".format(time.time() - t))
 
 cv2.waitKey(0)
-cv2.destroyAllWindows()
 
