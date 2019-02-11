@@ -27,3 +27,7 @@ TBD.  We are still working on this part.
 ## Testing weights and config using ROS and AR.Drone Camera:
 	roslaunch optitrack_controller ardrone.launch
 	roslaunch darknet_ros yolo_pistols.launch
+
+
+# Downloading pose caffemodels
+cd ~/threat_detection && . /pose_detection/pose_models/getModels.sh 
