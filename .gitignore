@@ -41,3 +41,5 @@ YOLOtools/Video_Files
 *.out
 *.app
 
+# Large Weights and Networks
+*.caffemodel
