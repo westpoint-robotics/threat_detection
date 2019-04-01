@@ -1,0 +1,6 @@
+# directory of folder with pose models(ends with '/')
+model_folder: /home/benjamin/CMU/openpose/models/
+
+# Folder of images to process
+image_folder: /home/benjamin/threat_detection/pose_detection/images/
+
