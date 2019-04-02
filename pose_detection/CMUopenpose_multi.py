@@ -2,8 +2,6 @@
 # It requires OpenCV installed for Python
 import sys
 import cv2
-import os
-from sys import platform
 from os import walk # for listing contents of a directory
 import argparse
 import yaml
@@ -20,11 +18,6 @@ def main():
             cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
         else:
             cfg = yaml.load(ymlfile)
-
-    # Flags
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument("--image_path", default="/home/benjamin/pipelineOP/examples/media/COCO_val2014_000000000192.jpg", help="Process an image. Read all standard formats (jpg, png, bmp, etc.).")
-    # args = parser.parse_known_args()
 
     # Custom Params (refer to include/openpose/flags.hpp for more parameters)
     params = dict()
