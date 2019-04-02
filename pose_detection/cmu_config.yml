@@ -2,5 +2,5 @@
 model_folder: /home/benjamin/CMU/openpose/models/
 
 # Folder of images to process
-image_folder: /home/benjamin/threat_detection/pose_detection/images/
+image_folder: /home/benjamin/pipelineOP/examples/media/
 

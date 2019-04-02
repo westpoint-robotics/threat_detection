@@ -12,14 +12,19 @@ sys.path.append('/usr/local/python')
 from openpose import pyopenpose as op
 # dir_path = os.path.dirname(os.path.realpath(__file__))
 
+
+
 def main():
     with open("cmu_config.yml", 'r') as ymlfile:
-        cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
+        if sys.version_info[0] > 2:
+            cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
+        else:
+            cfg = yaml.load(ymlfile)
 
     # Flags
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--image_path", default="/home/benjamin/pipelineOP/examples/media/COCO_val2014_000000000192.jpg", help="Process an image. Read all standard formats (jpg, png, bmp, etc.).")
-    args = parser.parse_known_args()
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument("--image_path", default="/home/benjamin/pipelineOP/examples/media/COCO_val2014_000000000192.jpg", help="Process an image. Read all standard formats (jpg, png, bmp, etc.).")
+    # args = parser.parse_known_args()
 
     # Custom Params (refer to include/openpose/flags.hpp for more parameters)
     params = dict()
