@@ -1,7 +1,12 @@
-cd ~/datasets
+cd ~/threat_detection/datasets/Aggressiveness
 
-tar -cvf pistol500_yolo.tar pistol500_yolo/* 
-rclone sync ~/datasets/pistol500_yolo.tar threatdrive:/Threat_Detection/datasets/ -v
+tar -cvf Low_ordered.tar Low_ordered/* 
+tar -cvf High_ordered.tar High_ordered/* 
+tar -cvf Medium_ordered.tar Medium_ordered/* 
+
+rclone sync ~/threat_detection/datasets/Aggressiveness/Low_ordered.tar threatdrive:/Threat_Detection/datasets/Aggressiveness/ -v
+rclone sync ~/threat_detection/datasets/Aggressiveness/High_ordered.tar threatdrive:/Threat_Detection/datasets/Aggressiveness/ -v
+rclone sync ~/threat_detection/datasets/Aggressiveness/Medium_ordered.tar threatdrive:/Threat_Detection/datasets/Aggressiveness/ -v
 
 
 # tar -cvf assault_rifle.tar assault_rifle/* 

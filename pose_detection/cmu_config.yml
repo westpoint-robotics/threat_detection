@@ -1,6 +1,21 @@
+# Folder of images to process
+show_images: false
+image_folder: /home/benjamin/threat_detection/datasets/Aggressiveness/High_ordered/images/
+single_image: COCO_val2014_000000000589.jpg
+
+save_keypoints: true
+keypoint_folder: /home/benjamin/threat_detection/datasets/Aggressiveness/High_ordered/keypoints/
+
+save_output_image: true
+output_folder: /home/benjamin/threat_detection/datasets/Aggressiveness/High_ordered/overlayed/
+
 # directory of folder with pose models(ends with '/')
 model_folder: /home/benjamin/CMU/openpose/models/
+model_pose: BODY_25
+# DEFINE_string(model_pose,               "BODY_25",      "Model to be used. E.g., `COCO` (18 keypoints), `MPI` (15 keypoints, ~10% faster), "
+#                                                         "`MPI_4_layers` (15 keypoints, even faster but less accurate).");
+# An array pose_keypoints_2d containing the body part locations and detection confidence formatted as x1,y1,c1,x2,y2,c2,
+# The coordinates x and y can be normalized to the range [0,1], [-1,1], [0, source size], [0, output size], etc., 
+# depending on the flag keypoint_scale (see flag for more information), while c is the confidence score in the range [0,1].
 
-# Folder of images to process
-image_folder: /home/benjamin/pipelineOP/examples/media/
 
