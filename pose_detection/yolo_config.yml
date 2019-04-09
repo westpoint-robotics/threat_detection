@@ -1,0 +1,8 @@
+# Folder of images to process
+yolo_data: /home/benjamin/ros/src/usma_threat_ros/yolo/pistol.data
+yolo_config: /home/benjamin/ros/src/usma_threat_ros/yolo/pistol-tiny.cfg
+yolo_weights: /home/benjamin/ros/src/usma_threat_ros/yolo/pistol-tiny_300000.weights
+
+src_folder: /home/benjamin/datasets/test/
+dst_folder: /home/benjamin/datasets/test/output/
+

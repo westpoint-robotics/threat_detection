@@ -1,5 +1,5 @@
 # Images / Datasets 
-azure/datasets/
+datasets
 YOLOtools/Examples
 YOLOtools/Images
 YOLOtools/Video_Files
@@ -43,3 +43,5 @@ YOLOtools/Video_Files
 
 # Large Weights and Networks
 *.caffemodel
+*.weights
+*.tar
