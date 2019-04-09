@@ -1,13 +1,13 @@
 # Folder of images to process
 show_images: false
-image_folder: /home/benjamin/threat_detection/datasets/Aggressiveness/High_ordered/images/
+image_folder: /home/benjamin/datasets/Aggressiveness/High_ordered/images/
 single_image: COCO_val2014_000000000589.jpg
 
 save_keypoints: true
-keypoint_folder: /home/benjamin/threat_detection/datasets/Aggressiveness/High_ordered/keypoints/
+keypoint_folder: /home/benjamin/datasets/Aggressiveness/High_ordered/keypoints/
 
 save_output_image: true
-output_folder: /home/benjamin/threat_detection/datasets/Aggressiveness/High_ordered/overlayed/
+output_folder: /home/benjamin/datasets/Aggressiveness/High_ordered/overlayed/
 
 # directory of folder with pose models(ends with '/')
 model_folder: /home/benjamin/CMU/openpose/models/
