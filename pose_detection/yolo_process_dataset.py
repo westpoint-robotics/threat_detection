@@ -1,48 +1,65 @@
+# import libraries
 import shutil
 import numpy as np
 import cv2
-import os,sys
-import time
+import os,sys,time
+import yaml
 
+#setup and import darknet-yolo
 sys.path.append('/usr/local/python') # path for CMUopenpose library
 sys.path.append(os.environ['DARKNET_PATH']) 
 sys.path.append(os.environ['DARKNET_PATH']+'/python')
-
 import darknet as dn
 
-yolo_config = '/home/benjamin/ros/src/usma_threat_ros/yolo/pistol-tiny.cfg'
-yolo_weights = '/home/benjamin/ros/src/usma_threat_ros/yolo/pistol-tiny_300000.weights'
-net = dn.load_net(yolo_config,yolo_weights,0)
+def main():
+	with open("yolo_config.yml", 'r') as ymlfile:
+		if sys.version_info[0] > 2:
+			cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
+		else:
+			cfg = yaml.load(ymlfile)
 
-yolo_data = '/home/benjamin/ros/src/usma_threat_ros/yolo/pistol.data'
-meta = dn.load_meta(yolo_data)
+	# Setup yolo config
+	yolo_data = cfg['yolo_data'] 
+	yolo_config = cfg['yolo_config'] 
+	yolo_weights = cfg['yolo_weights'] 
 
-# src_folder = '/home/benjamin/datasets/test/'
-src_folder = '/home/benjamin/datasets/test/low_aggressive_000005.jpg'
+	net = dn.load_net(yolo_config,yolo_weights,0)
+	meta = dn.load_meta(yolo_data)
+
+	# walk 'src_folder' for images
+	image_list = []
+	for (dirpath, dirnames, filenames) in os.walk(cfg['src_folder']):
+		image_list.extend(filenames)
+		break
+
+	images_processed = 0
+	for image in image_list:
+		current_image = cfg['src_folder']+image
+		img = cv2.imread(current_image,cv2.IMREAD_COLOR) #load image in cv2
+		objects = dn.detect(net, meta, current_image)
+		print("{}").format(objects)
+
+		for detection in objects:
+			box_color = (255,255,0)
+			center_x = detection[2][0]
+			center_y = detection[2][2]
+			width = detection[2][1]
+			height = detection[2][3]
+			UL_x = int(center_x - width/2) #Upper Left corner X coord
+			UL_y = int(center_y + height/2) #Upper left Y
+			LR_x = int(center_x + width/2)
+			LR_y = int(center_y - height/2)
+			#write bounding box to image
+			cv2.rectangle(img,(UL_x,UL_y),(LR_x,LR_y),box_color,5)
+			# cv2.resizeWindow("image", crop_img.shape[0]*1,crop_img.shape[1]*1)
+		
+		cv2.imshow(current_image, img)
+		cv2.waitKey(0)
+		cv2.destroyWindow(current_image)
 
 
-img = cv2.imread(src_folder,cv2.IMREAD_COLOR) #load image in cv2
-objects = dn.detect(net, meta, src_folder)
-
-
-for detection in objects:
-	box_color = (0,255,0)
-	center_x = detection[2][0]
-	center_y = detection[2][2]
-	width = detection[2][1]
-	height = detection[2][3]
-	UL_x = int(center_x - width/2) #Upper Left corner X coord
-	UL_y = int(center_y + height/2) #Upper left Y
-	LR_x = int(center_x + width/2)
-	LR_y = int(center_y - height/2)
-	#write bounding box to image
-	cv2.rectangle(img,(UL_x,UL_y),(LR_x,LR_y),box_color,5)
-	# cv2.resizeWindow("image", crop_img.shape[0]*1,crop_img.shape[1]*1)
-	
-cv2.imshow("image", img)
-cv2.waitKey(0)
-cv2.destroyWindow("image")
-
+if __name__ == "__main__":
+	main()
 
 
 

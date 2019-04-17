@@ -1,37 +1,42 @@
-import os,sys
-import time
-
-sys.path.append('/usr/local/python')
-sys.path.append('/home/benjamin/ros/src/darknet_ros/darknet/python')
-sys.path.append('/home/benjamin/ros/src/darknet_ros/darknet')
-
-import darknet as dn
-import pdb
+# import libraries
 import shutil
 import numpy as np
 import cv2
+import os,sys,time
+import yaml
 
+#setup and import darknet-yolo
+sys.path.append('/usr/local/python') # path for CMUopenpose library
+sys.path.append(os.environ['DARKNET_PATH']) 
+sys.path.append(os.environ['DARKNET_PATH']+'/python')
+import darknet as dn
 
-yolocfg = '/home/benjamin/ros/src/usma_threat_ros/cfg/models/pistol-yolov3-tiny.cfg'
-yolowts = '/home/benjamin/ros/src/usma_threat_ros/cfg/weights/pistol-yolov3-tiny_last.weights'
-yolometa = '/home/benjamin/ros/src/usma_threat_ros/cfg/meta/pistol_obj.data'
+with open("yolo_config.yml", 'r') as ymlfile:
+  if sys.version_info[0] > 2:
+    cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
+  else:
+    cfg = yaml.load(ymlfile)
 
-# net = cv2.dnn.readNetFromDarknet(yolocfg, yolowts)
+# Setup yolo config
+yolo_data = cfg['yolo_data'] 
+yolo_config = cfg['yolo_config'] 
+yolo_weights = cfg['yolo_weights'] 
 
-net = dn.load_net(yolocfg,yolowts,0)
-meta = dn.load_meta(yolometa)
+net = dn.load_net(yolo_config,yolo_weights,0)
+meta = dn.load_meta(yolo_data)
 
 folder = '/home/benjamin/datasets/test/'
 
 while True:
    files = os.listdir(folder)
    #dn.detect fails occasionally. I suspect a race condition.
-   time.sleep(5)
+   # time.sleep(5)
    for f in files:
        if f.endswith(".jpg"):
            print (f)
            path = os.path.join(folder, f)
            pathb = path.encode('utf-8')
+           print()
            res = dn.detect(net, meta, pathb)
            print (res) #list of name, probability, bounding box center x, center y, width, height
            i=0

@@ -1,8 +1,19 @@
-# Folder of images to process
+ocv_classes: /home/benjamin/threat_detection/pose_detection/coco_classes.txt
+
+# yolo_savefile: /home/benjamin/datasets/Aggressiveness/coco.jpg
+# yolo_data: /home/benjamin/ros/src/usma_threat_ros/yolo/coco-v3.data
+# yolo_config: /home/benjamin/ros/src/usma_threat_ros/yolo/coco-v3.cfg
+# yolo_weights: /home/benjamin/ros/src/usma_threat_ros/yolo/coco-v3.weights
+
+yolo_savefile: /home/benjamin/datasets/Aggressiveness/pistol.jpg
 yolo_data: /home/benjamin/ros/src/usma_threat_ros/yolo/pistol.data
 yolo_config: /home/benjamin/ros/src/usma_threat_ros/yolo/pistol-tiny.cfg
-yolo_weights: /home/benjamin/ros/src/usma_threat_ros/yolo/pistol-tiny_300000.weights
+yolo_weights: /home/benjamin/ros/src/usma_threat_ros/yolo/pistol-tiny_last.weights
+# yolo_weights: /home/benjamin/ros/src/usma_threat_ros/yolo/pistol-tiny_300000.weights
 
+# single_image: /home/benjamin/datasets/Aggressiveness/High_ordered/images/high_aggressive_000013.jpg
+single_image: /home/benjamin/datasets/Aggressiveness/Low_ordered/images/low_aggressive_000003.jpg
+# Folder of images to process
 src_folder: /home/benjamin/datasets/test/
 dst_folder: /home/benjamin/datasets/test/output/
 
