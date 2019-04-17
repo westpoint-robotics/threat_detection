@@ -1,7 +1,8 @@
 # import libraries
+import sys; sys.path.append('/usr/local/python')
 import numpy as np
 import cv2
-import os,sys
+import os
 import yaml
 from openpose import pyopenpose as op
 
@@ -37,6 +38,12 @@ def box_overlap(human_box, gun_box):
 def range_overlap(a_min, a_max, b_min, b_max):
 	# Neither range is completely greater than the other
 	return (a_min <= b_max) and (b_min <= a_max)
+
+def imcrop(img, bbox):
+   x1, y1, x2, y2 = bbox
+   if x1 < 0 or y1 < 0 or x2 > img.shape[1] or y2 > img.shape[0]:
+        img, x1, x2, y1, y2 = pad_img_to_fit_bbox(img, x1, x2, y1, y2)
+   return img[y1:y2, x1:x2, :]
 
 def main():
 	# Setup yolo config
@@ -78,7 +85,7 @@ def main():
 	# Load image
 	cv_image = cv2.imread(cfg['single_image'] ,cv2.IMREAD_COLOR) #load image in cv2
 	box_image = cv_image.copy()
-	skeleton_image = cv_image.copy()
+	skeleton_image = cv2.resize(box_image,(dn.network_width(pistol_net),dn.network_height(pistol_net)),interpolation=cv2.INTER_LINEAR)
 
 	# Detect objects
 	frame_resized = cv2.resize(box_image,(dn.network_width(pistol_net),dn.network_height(pistol_net)),interpolation=cv2.INTER_LINEAR)
@@ -112,9 +119,9 @@ def main():
 
 	box_image = cv2.resize(frame_resized,(cv_image.shape[1], cv_image.shape[0]),interpolation=cv2.INTER_LINEAR)	
 
-	cv2.imshow("box_image", box_image)
-	cv2.waitKey(0)
-	cv2.destroyWindow("box_image")
+	# cv2.imshow("box_image", box_image)
+	# cv2.waitKey(0)
+	# cv2.destroyWindow("box_image")
 
 	# check overlapping boxes
 	person_boxes = []
@@ -133,22 +140,33 @@ def main():
 			if box_overlap(person_box, pistol_box):
 				potential_threats.append(person_box)
 
-	# generate sub images for skeleton
-	person_subimgs = []
-	i = 0
-	for person_box in self.potential_threats:
-		# print("person_box[{}], xmin:[{}], xmax:[{}], ymin:[{}], ymax:[{}] ").format(i, person_box["xmin"], person_box["xmax"], person_box["ymin"], person_box["ymax"]) 
-		subimg = dict()
-		crop_img = frame_resized[person_box["ymin"]:person_box["ymax"],  person_box["xmin"]:person_box["xmax"]]
-		subimg_idx = "subimg" + str(i)
-		person_subimgs[subimg_idx] = crop_img
-		i += 1
+	
+	
+	for person_box in potential_threats:
+		# generate sub images for skeleton
+		crop_img = skeleton_image[person_box["ymin"]:person_box["ymax"],  person_box["xmin"]:person_box["xmax"]]
+		# cv2.imshow("crop_img", crop_img)
+		# cv2.waitKey(0)
+		# cv2.destroyWindow("crop_img")
+		
+		# process sub image for skeleton		
+		skel_image = crop_img.copy()
+		datum.cvInputData = skel_image
+		opWrapper.emplaceAndPop([datum])
+
+		cv2.imshow("skeleton", datum.cvOutputData)
+		cv2.waitKey(0)
+		cv2.destroyWindow("skeleton")
+
+		datum.poseKeypoints
+
+
 
 	
-	# process sub image for skeleton
-	imageToProcess = cv2.imread(current_image)
-	datum.cvInputData = imageToProcess
-	opWrapper.emplaceAndPop([datum])
+	
+	# imageToProcess = cv2.imread(current_image)
+	# datum.cvInputData = imageToProcess
+	# opWrapper.emplaceAndPop([datum])
 
 
 

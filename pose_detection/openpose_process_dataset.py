@@ -10,7 +10,7 @@ from openpose import pyopenpose as op
 
 
 def main():
-    with open("cmu_config.yml", 'r') as ymlfile:
+    with open("openpose_config.yml", 'r') as ymlfile:
         if sys.version_info[0] > 2:
             cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
         else:
