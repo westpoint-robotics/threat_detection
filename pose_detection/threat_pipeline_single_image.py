@@ -119,9 +119,9 @@ def main():
 
 	box_image = cv2.resize(frame_resized,(cv_image.shape[1], cv_image.shape[0]),interpolation=cv2.INTER_LINEAR)	
 
-	# cv2.imshow("box_image", box_image)
-	# cv2.waitKey(0)
-	# cv2.destroyWindow("box_image")
+	cv2.imshow("box_image", box_image)
+	cv2.waitKey(0)
+	cv2.destroyWindow("box_image")
 
 	# check overlapping boxes
 	person_boxes = []
@@ -145,9 +145,9 @@ def main():
 	for person_box in potential_threats:
 		# generate sub images for skeleton
 		crop_img = skeleton_image[person_box["ymin"]:person_box["ymax"],  person_box["xmin"]:person_box["xmax"]]
-		# cv2.imshow("crop_img", crop_img)
-		# cv2.waitKey(0)
-		# cv2.destroyWindow("crop_img")
+		cv2.imshow("crop_img", crop_img)
+		cv2.waitKey(0)
+		cv2.destroyWindow("crop_img")
 		
 		# process sub image for skeleton		
 		skel_image = crop_img.copy()
