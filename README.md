@@ -50,3 +50,6 @@ TBD.  We are still working on this part.
 	mkdir -p ~/opencv/opencv/build
 	cd ~/opencv/opencv/build
 	cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D INSTALL_C_EXAMPLES=OFF -D INSTALL_PYTHON_EXAMPLES=ON -D OPENCV_EXTRA_MODULES_PATH=~/opencv_contrib/modules -D BUILD_EXAMPLES=ON ..
+
+
+	https://nbviewer.jupyter.org/github/westpoint-robotics/threat_detection/blob/master/detect_threat_level/Skeleton%20Threat%20Detection.ipynb

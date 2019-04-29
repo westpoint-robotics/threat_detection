@@ -1,5 +1,5 @@
 # import libraries
-import sys; sys.path.append('/usr/local/python')
+import sys; sys.path.append('/usr/local/python'); sys.path.append('/usr/local/python')
 import numpy as np
 import cv2
 import os
@@ -12,6 +12,15 @@ sys.path.append('/usr/local/python') # path for CMUopenpose library
 sys.path.append(os.environ['DARKNET_PATH']) 
 sys.path.append(os.environ['DARKNET_PATH']+'/python')
 import darknet as dn
+
+import tensorflow as tf
+from feedforward_model import *
+
+def prediction(skele):
+	labels = np.array(['high','med','low'])
+	model = feedforward(skele.shape[0],3,hidden_layer_size=[8],learning_rate=.0025,train_keep_prob=[.5])
+	prediction = model.predict(skele)
+	print("Predicted label is ", labels[prediction[0][0]])
 
 def get_bounding_boxes(detections, box_color):
 	boxes = []
@@ -119,9 +128,9 @@ def main():
 
 	box_image = cv2.resize(frame_resized,(cv_image.shape[1], cv_image.shape[0]),interpolation=cv2.INTER_LINEAR)	
 
-	cv2.imshow("box_image", box_image)
-	cv2.waitKey(0)
-	cv2.destroyWindow("box_image")
+	# cv2.imshow("box_image", box_image)
+	# cv2.waitKey(0)
+	# cv2.destroyWindow("box_image")
 
 	# check overlapping boxes
 	person_boxes = []
@@ -145,20 +154,50 @@ def main():
 	for person_box in potential_threats:
 		# generate sub images for skeleton
 		crop_img = skeleton_image[person_box["ymin"]:person_box["ymax"],  person_box["xmin"]:person_box["xmax"]]
-		cv2.imshow("crop_img", crop_img)
-		cv2.waitKey(0)
-		cv2.destroyWindow("crop_img")
+		# cv2.imshow("crop_img", crop_img)
+		# cv2.waitKey(0)
+		# cv2.destroyWindow("crop_img")
 		
 		# process sub image for skeleton		
 		skel_image = crop_img.copy()
 		datum.cvInputData = skel_image
 		opWrapper.emplaceAndPop([datum])
 
-		cv2.imshow("skeleton", datum.cvOutputData)
-		cv2.waitKey(0)
-		cv2.destroyWindow("skeleton")
+		
+		x = np.empty((1,9,2))
+		rele_dexes = [1,2,3,4,5,6,7,9,12]		
+		right_elbow = 3
+		right_wrist = 4
 
-		datum.poseKeypoints
+		skeletons = datum.poseKeypoints
+		for skele in skeletons:
+			# print("\n\nskele.shape = {}").format(skele.shape)
+			if skele[right_elbow].all():
+				skele[:,0:2] -= skele[right_elbow,0:2] # set right elbow as origin
+				# print("skele.right_elbow = {}").format(skele[right_elbow])
+				if skele[right_wrist].all():
+					# print("skele.right_wrist = {}").format(skele[right_wrist])
+					forearm_len = np.sqrt(skele[right_wrist][0]**2+skele[right_wrist][1]**2) # calculate pixel length of forearm
+					# print("skele.forearm_len = {}").format(forearm_len)
+					skele[:,0:2] /= forearm_len # scale all joints by forearm length
+					skele_x = skele[rele_dexes,0:2]
+					print("skele.shape: {}").format(skele_x.shape)
+					print("skele: {}").format(skele_x)
+					
+					x = skele_x.reshape([1,skele_x.shape[0]*skele_x.shape[1]])
+					print("x.shape: {}").format(x.shape)
+					print("x: {}").format(x)
+
+					print(prediction(x))
+		
+
+
+		# cv2.imshow("skeleton", datum.cvOutputData)
+		# cv2.waitKey(0)
+		# cv2.destroyWindow("skeleton")
+
+
+
 
 
 
@@ -172,3 +211,5 @@ def main():
 
 if __name__ == "__main__":
 	main()
+
+
