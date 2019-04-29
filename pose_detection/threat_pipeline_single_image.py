@@ -16,11 +16,18 @@ import darknet as dn
 import tensorflow as tf
 from feedforward_model import *
 
-def prediction(skele):
-	labels = np.array(['high','med','low'])
-	model = feedforward(skele.shape[0],3,hidden_layer_size=[8],learning_rate=.0025,train_keep_prob=[.5])
-	prediction = model.predict(skele)
-	print("Predicted label is ", labels[prediction[0][0]])
+def prediction(skele,model_name='basic_model'):
+	labels = ['high','med','low']
+	session = tf.Session()
+	with session as sess:
+		new_saver = tf.train.import_meta_graph('model/{}.meta'.format(model_name))
+		new_saver.restore(sess, 'model/{}'.format(model_name))
+		graph = tf.get_default_graph()
+		input_ph = graph.get_tensor_by_name("input_ph:0")
+		pred = graph.get_tensor_by_name("pred:0")
+
+		predictions = sess.run([pred],feed_dict={input_ph: skele})
+		return labels[predictions[0][0]]
 
 def get_bounding_boxes(detections, box_color):
 	boxes = []
@@ -93,7 +100,12 @@ def main():
 
 	# Load image
 	cv_image = cv2.imread(cfg['single_image'] ,cv2.IMREAD_COLOR) #load image in cv2
+	height = cv_image.shape[0]
+	width = cv_image.shape[1]
+	# print("original height: {}").format(height)
+	# print("original width: {}").format(width)
 	box_image = cv_image.copy()
+	#resize image to match network dimensions
 	skeleton_image = cv2.resize(box_image,(dn.network_width(pistol_net),dn.network_height(pistol_net)),interpolation=cv2.INTER_LINEAR)
 
 	# Detect objects
@@ -102,7 +114,16 @@ def main():
 	dn.copy_image_from_bytes(darknet_image,frame_resized.tobytes())
 	pistol_detections = dn.detect_image(pistol_net, pistol_meta, darknet_image, thresh=0.25)
 	coco_detections = dn.detect_image(coco_net, coco_meta, darknet_image, thresh=0.25)
-	
+
+	# print("resized height: {}").format(dn.network_height(pistol_net))
+	# print("resized width: {}").format(dn.network_width(pistol_net))
+
+	height_scale = float(cv_image.shape[0]) / dn.network_height(pistol_net)
+	width_scale = float(cv_image.shape[1]) / dn.network_height(pistol_net)
+
+	# print("height_scale: {}").format(height_scale)
+	# print("width_scale: {}").format(width_scale)
+
 	# get bounding boxes
 	pistol_boxes = get_bounding_boxes(pistol_detections, (255,0,0))
 	coco_boxes = get_bounding_boxes(coco_detections, (0,0,255))
@@ -112,32 +133,35 @@ def main():
 	for box in coco_boxes:
 		BBoxes.append(box)
 
+	fontFace = cv2.FONT_HERSHEY_DUPLEX
+	text_color = (0,0,255)
+	fontScale = 1
+	text_thickness = 1
+
+	box_thickness = 2
 	box_color = (255,0,0)
 	for box in pistol_boxes:
 		# print("pistol_boxes  {}").format(box['class'])
 		upper_left = (box['xmin'],box['ymin'])
 		lower_right = (box['xmax'],box['ymax'])
-		cv2.rectangle(frame_resized,upper_left,lower_right,box_color,2)
+		cv2.rectangle(frame_resized,upper_left,lower_right,box_color,box_thickness)
+		cv2.putText(frame_resized,box['class'],upper_left, fontFace, fontScale, box_color,text_thickness,cv2.LINE_AA)
 
 	box_color = (0,0,255)
 	for box in coco_boxes:
 		# print("coco_boxes  {}").format(box['class'])
-		upper_left = (box['xmin'],box['ymin'])
-		lower_right = (box['xmax'],box['ymax'])
-		cv2.rectangle(frame_resized,upper_left,lower_right,box_color,2)
-
-	box_image = cv2.resize(frame_resized,(cv_image.shape[1], cv_image.shape[0]),interpolation=cv2.INTER_LINEAR)	
-
-	# cv2.imshow("box_image", box_image)
-	# cv2.waitKey(0)
-	# cv2.destroyWindow("box_image")
+		if box['class'] == "person":
+			upper_left = (box['xmin'],box['ymin'])
+			lower_right = (box['xmax'],box['ymax'])
+			cv2.rectangle(frame_resized,upper_left,lower_right,box_color,box_thickness)
+			cv2.putText(frame_resized,box['class'],upper_left, fontFace, fontScale, box_color,text_thickness,cv2.LINE_AA)
 
 	# check overlapping boxes
 	person_boxes = []
 	pistol_boxes = []
 	potential_threats = []
 	for box in BBoxes:
-		print("box[class] = {}").format(box)
+		# print("box[class] = {}").format(box)
 		if box['class'] == "person":
 			person_boxes.append({'xmin':box['xmin'],'ymin':box['ymin'],'xmax':box['xmax'],'ymax':box['ymax']})
 
@@ -149,9 +173,18 @@ def main():
 			if box_overlap(person_box, pistol_box):
 				potential_threats.append(person_box)
 
-	
-	
+	# FONT_HERSHEY_SIMPLEX = 0,
+	# FONT_HERSHEY_PLAIN = 1,
+	# FONT_HERSHEY_DUPLEX = 2,
+	# FONT_HERSHEY_COMPLEX = 3,
+	# FONT_HERSHEY_TRIPLEX = 4,
+	# FONT_HERSHEY_COMPLEX_SMALL = 5,
+	# FONT_HERSHEY_SCRIPT_SIMPLEX = 6,
+	# FONT_HERSHEY_SCRIPT_COMPLEX = 7,
+
+	person_number = 0
 	for person_box in potential_threats:
+		person_number +=1
 		# generate sub images for skeleton
 		crop_img = skeleton_image[person_box["ymin"]:person_box["ymax"],  person_box["xmin"]:person_box["xmax"]]
 		# cv2.imshow("crop_img", crop_img)
@@ -181,14 +214,46 @@ def main():
 					# print("skele.forearm_len = {}").format(forearm_len)
 					skele[:,0:2] /= forearm_len # scale all joints by forearm length
 					skele_x = skele[rele_dexes,0:2]
-					print("skele.shape: {}").format(skele_x.shape)
-					print("skele: {}").format(skele_x)
+					# print("skele.shape: {}").format(skele_x.shape)
+					# print("skele: {}").format(skele_x)
 					
 					x = skele_x.reshape([1,skele_x.shape[0]*skele_x.shape[1]])
-					print("x.shape: {}").format(x.shape)
-					print("x: {}").format(x)
+					# print("x.shape: {}").format(x.shape)
+					# print("x: {}").format(x)
 
-					print(prediction(x))
+					classification = prediction(x)
+					# Add text to person box
+					# cv2.rectangle(frame_resized,upper_left,lower_right,box_color,2)
+					
+					textSize = cv2.getTextSize(classification, fontFace, fontScale, text_thickness);
+					text_width = textSize[0][0]
+					text_height = textSize[0][1]
+					text_baseline = textSize[1]
+					# print("text_width = {}").format(text_width)
+					# print("text_height = {}").format(text_height)
+					# print("text_baseline = {}").format(text_baseline)
+
+					text_lower_left = (person_box['xmin']+box_thickness,person_box['ymin']+text_height+box_thickness)
+					text_upper_right = (person_box['xmin']+box_thickness+text_width,person_box['ymin']+box_thickness)
+
+					black_box_lower_left = (person_box['xmin']+box_thickness,person_box['ymin']+text_height+text_baseline+box_thickness)
+					black_box_upper_right = (person_box['xmin']+box_thickness+text_width,person_box['ymin']+box_thickness)
+
+					cv2.rectangle(frame_resized,black_box_lower_left,black_box_upper_right,(0,0,0),-1)
+					cv2.putText(frame_resized,classification,text_lower_left, fontFace, fontScale, text_color,text_thickness,cv2.LINE_AA)
+					
+					skele_image_filename = cfg['save_folder'] + cfg['single_filename'] + "_skele_{}.png".format(person_number)
+					# print("skele_image_filename: {}").format(skele_image_filename)
+					skele_image = datum.cvOutputData
+
+					skele_height = skele_image.shape[0]
+					skele_width = skele_image.shape[1]
+
+					newX,newY = skele_width*width_scale, skele_height*height_scale
+
+					skele_image_resized = cv2.resize(skele_image,(int(newX),int(newY)))
+
+					cv2.imwrite(skele_image_filename,skele_image_resized)
 		
 
 
@@ -197,6 +262,20 @@ def main():
 		# cv2.destroyWindow("skeleton")
 
 
+	# return bounding boxes to original image dimensions
+	box_image = cv2.resize(frame_resized,(cv_image.shape[1], cv_image.shape[0]),interpolation=cv2.INTER_LINEAR)	
+	box_image_filename = cfg['save_folder'] + cfg['single_filename'] + "_label.png"
+	# print("box_image_filename: {}").format(box_image_filename)
+	cv2.imwrite(box_image_filename,box_image) 
+
+	# cv2.imshow("box_image", box_image)
+	# cv2.waitKey(0)
+	# cv2.destroyWindow("box_image")
+
+
+	# box_image_filename = cfg['save_folder'] + cfg['single_filename'] + "class.png"
+	# print("box_image_filename: {}").format(box_image_filename)
+	# cv2.imwrite(cfg['save_folder'] ,img) #wait until all the objects are marked and then write out.
 
 
 
