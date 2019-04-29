@@ -3,6 +3,7 @@ import numpy as np
 import time
 from augment import Generator
 import matplotlib.pyplot as plt
+from tensorflow.python.tools import inspect_checkpoint as chkp
 
 """
 This object is a feedforward neural network using tensorflow and a generator
@@ -49,8 +50,8 @@ class feedforward(object):
 
     # Creates the input layer for data using placeholders
     def __input_layer(self):
-        self.inputs = tf.placeholder(tf.float32,shape=(None,self.input_size))
-        self.targets = tf.placeholder(tf.int64,shape=(None,self.output_size))
+        self.inputs = tf.placeholder(tf.float32,shape=(None,self.input_size),name="input_ph")
+        self.targets = tf.placeholder(tf.int64,shape=(None,self.output_size),name="target_ph")
 
     # Takes inputs and puts them through hidden layers with dropout
     def __hidden_layers(self):
@@ -59,11 +60,11 @@ class feedforward(object):
         self.hidden = tf.layers.dropout(self.hidden,
                                         rate=self.train_keep_prob[0])
 
-        for i in range(len(self.hidden_layer_size)-1):
-            self.hidden=tf.layers.dense(self.hidden,self.hidden_layer_size[i+1],
-                                        activation=self.activation)
+        for i in range(1,len(self.hidden_layer_size)):
+            self.hidden=tf.layers.dense(self.hidden,self.hidden_layer_size[i],
+                                        activation=self.activation,name="hl_{}".format(i),reuse=True)
             self.hidden=tf.layers.dropout(self.hidden,
-                                          rate=self.train_keep_prob[i+1])
+                                          rate=self.train_keep_prob[i+1],name="do_{}".format(i),reuse=True)
 
     # Takes output of previous hidden layer and creates an output of output_size
     # (This does not have dropout because it is the output layer)
@@ -78,7 +79,7 @@ class feedforward(object):
         elif self.c_r == 'classification':
             self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
                                        labels=self.targets,logits=self.output))
-            self.pred = tf.argmax(input=self.output,axis=1)
+            self.pred = tf.argmax(input=self.output,axis=1,name='pred')
         else:
             raise ValueError('Not regresson or classification')
 
@@ -171,6 +172,7 @@ class feedforward(object):
                 except Exception:
                     raise ValueError("Failed Loading Model")
             else:
+                chkp.print_tensors_in_checkpoint_file(tf.train.latest_checkpoint('model/'), tensor_name='', all_tensors=True)
                 self.saver.restore(sess,tf.train.latest_checkpoint('model/'))
             pred = sess.run([self.pred],feed_dict={self.inputs: x})
             return pred
