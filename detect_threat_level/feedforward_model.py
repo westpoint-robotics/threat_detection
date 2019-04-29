@@ -172,7 +172,6 @@ class feedforward(object):
                 except Exception:
                     raise ValueError("Failed Loading Model")
             else:
-                chkp.print_tensors_in_checkpoint_file(tf.train.latest_checkpoint('model/'), tensor_name='', all_tensors=True)
                 self.saver.restore(sess,tf.train.latest_checkpoint('model/'))
             pred = sess.run([self.pred],feed_dict={self.inputs: x})
             return pred
