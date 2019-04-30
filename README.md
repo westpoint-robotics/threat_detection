@@ -53,3 +53,9 @@ TBD.  We are still working on this part.
 
 
 	https://nbviewer.jupyter.org/github/westpoint-robotics/threat_detection/blob/master/detect_threat_level/Skeleton%20Threat%20Detection.ipynb
+
+
+
+	ssh 
+
+	scp user1@10.113.1.252:/home/user1/Carey/kevin_yolo/alt/darknet/people_pistol/data/Images/001 ~/datasets/iggy/001

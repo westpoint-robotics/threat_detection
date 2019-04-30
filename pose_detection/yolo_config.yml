@@ -28,3 +28,5 @@ save_folder: /home/benjamin/threat_detection/pose_detection/results/
 # single_image: /home/benjamin/datasets/Aggressiveness/High_ordered/images/high_aggressive_000156.jpg
 # single_filename: high_aggressive_000156
 
+single_image: /home/benjamin/datasets/Aggressiveness/High_ordered/images/high_aggressive_000190.jpg
+single_filename: high_aggressive_000190

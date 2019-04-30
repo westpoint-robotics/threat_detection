@@ -142,6 +142,7 @@ def main():
 	box_color = (255,0,0)
 	for box in pistol_boxes:
 		# print("pistol_boxes  {}").format(box['class'])
+		# if box['class'] == "pistol":
 		upper_left = (box['xmin'],box['ymin'])
 		lower_right = (box['xmax'],box['ymax'])
 		cv2.rectangle(frame_resized,upper_left,lower_right,box_color,box_thickness)
@@ -155,6 +156,14 @@ def main():
 			lower_right = (box['xmax'],box['ymax'])
 			cv2.rectangle(frame_resized,upper_left,lower_right,box_color,box_thickness)
 			cv2.putText(frame_resized,box['class'],upper_left, fontFace, fontScale, box_color,text_thickness,cv2.LINE_AA)
+
+	# cv2.imshow("frame_resized",frame_resized)
+	# cv2.waitKey(0)
+	# cv2.destroyWindow("frame_resized")
+	
+	# cv2.imshow("skeleton_image",skeleton_image)
+	# cv2.waitKey(0)
+	# cv2.destroyWindow("skeleton_image uncropped")
 
 	# check overlapping boxes
 	person_boxes = []
@@ -173,28 +182,48 @@ def main():
 			if box_overlap(person_box, pistol_box):
 				potential_threats.append(person_box)
 
-	# FONT_HERSHEY_SIMPLEX = 0,
-	# FONT_HERSHEY_PLAIN = 1,
-	# FONT_HERSHEY_DUPLEX = 2,
-	# FONT_HERSHEY_COMPLEX = 3,
-	# FONT_HERSHEY_TRIPLEX = 4,
-	# FONT_HERSHEY_COMPLEX_SMALL = 5,
-	# FONT_HERSHEY_SCRIPT_SIMPLEX = 6,
-	# FONT_HERSHEY_SCRIPT_COMPLEX = 7,
-
 	person_number = 0
 	for person_box in potential_threats:
 		person_number +=1
 		# generate sub images for skeleton
+		print("crop image (ymin:ymax), (xmin:xmax) : ({}:{}), ({}:{})").format(person_box["ymin"],person_box["ymax"], person_box["xmin"], person_box["xmax"])
+		if (person_box["ymin"] < 0):
+			person_box["ymin"] = 0
+		if (person_box["xmin"] < 0):
+			person_box["xmin"] = 0
+
+		if (person_box["ymax"] > skeleton_image.shape[0]):
+			person_box["ymax"] = skeleton_image.shape[0]
+		if (person_box["xmax"] > skeleton_image.shape[1]):
+			person_box["xmax"] = skeleton_image.shape[0]
+
+		print("crop image (ymin:ymax), (xmin:xmax) : ({}:{}), ({}:{})").format(person_box["ymin"],person_box["ymax"], person_box["xmin"], person_box["xmax"])
 		crop_img = skeleton_image[person_box["ymin"]:person_box["ymax"],  person_box["xmin"]:person_box["xmax"]]
+
+		# rescale sub image back to original dimensions
+		crop_img_height = crop_img.shape[0]
+		crop_img_width = crop_img.shape[1]
+		print("crop_img_width * width_scale : {}*{}={}").format(crop_img_width, width_scale, crop_img_width*width_scale)
+		print("crop_img_height * height_scale : {}*{}={}").format(crop_img_height, height_scale, crop_img_height*height_scale)
+
 		# cv2.imshow("crop_img", crop_img)
 		# cv2.waitKey(0)
 		# cv2.destroyWindow("crop_img")
 		
 		# process sub image for skeleton		
-		skel_image = crop_img.copy()
+		newX,newY = crop_img_width*width_scale, crop_img_height*height_scale
+		if (newX > 0) and (newY > 0):
+			# process sub image for skeleton		
+			skel_image = cv2.resize(crop_img,(int(newX),int(newY)))
+		else:
+			continue
+
 		datum.cvInputData = skel_image
 		opWrapper.emplaceAndPop([datum])
+
+		# cv2.imshow("skeleton", datum.cvOutputData)
+		# cv2.waitKey(0)
+		# cv2.destroyWindow("skeleton")
 
 		
 		x = np.empty((1,9,2))
@@ -203,63 +232,58 @@ def main():
 		right_wrist = 4
 
 		skeletons = datum.poseKeypoints
-		for skele in skeletons:
-			# print("\n\nskele.shape = {}").format(skele.shape)
-			if skele[right_elbow].all():
-				skele[:,0:2] -= skele[right_elbow,0:2] # set right elbow as origin
-				# print("skele.right_elbow = {}").format(skele[right_elbow])
-				if skele[right_wrist].all():
-					# print("skele.right_wrist = {}").format(skele[right_wrist])
-					forearm_len = np.sqrt(skele[right_wrist][0]**2+skele[right_wrist][1]**2) # calculate pixel length of forearm
-					# print("skele.forearm_len = {}").format(forearm_len)
-					skele[:,0:2] /= forearm_len # scale all joints by forearm length
-					skele_x = skele[rele_dexes,0:2]
-					# print("skele.shape: {}").format(skele_x.shape)
-					# print("skele: {}").format(skele_x)
-					
-					x = skele_x.reshape([1,skele_x.shape[0]*skele_x.shape[1]])
-					# print("x.shape: {}").format(x.shape)
-					# print("x: {}").format(x)
+		# print("skeletons.type: {}").format(type(skeletons))
+		# print("skeletons.size: {}").format(skeletons.size)
+		# print("skeletons: {}").format(skeletons)
+		if skeletons.size > 1:
+			for skele in skeletons:
+				# print("\n\nskele.shape = {}").format(skele.shape)
+				if skele[right_elbow].all():
+					skele[:,0:2] -= skele[right_elbow,0:2] # set right elbow as origin
+					# print("skele.right_elbow = {}").format(skele[right_elbow])
+					if skele[right_wrist].all():
+						# print("skele.right_wrist = {}").format(skele[right_wrist])
+						forearm_len = np.sqrt(skele[right_wrist][0]**2+skele[right_wrist][1]**2) # calculate pixel length of forearm
+						# print("skele.forearm_len = {}").format(forearm_len)
+						skele[:,0:2] /= forearm_len # scale all joints by forearm length
+						skele_x = skele[rele_dexes,0:2]
+						# print("skele.shape: {}").format(skele_x.shape)
+						# print("skele: {}").format(skele_x)
+						
+						x = skele_x.reshape([1,skele_x.shape[0]*skele_x.shape[1]])
+						# print("x.shape: {}").format(x.shape)
+						# print("x: {}").format(x)
 
-					classification = prediction(x)
-					# Add text to person box
-					# cv2.rectangle(frame_resized,upper_left,lower_right,box_color,2)
-					
-					textSize = cv2.getTextSize(classification, fontFace, fontScale, text_thickness);
-					text_width = textSize[0][0]
-					text_height = textSize[0][1]
-					text_baseline = textSize[1]
-					# print("text_width = {}").format(text_width)
-					# print("text_height = {}").format(text_height)
-					# print("text_baseline = {}").format(text_baseline)
+						classification = prediction(x)
+						# Add text to person box
+						# cv2.rectangle(frame_resized,upper_left,lower_right,box_color,2)
+						
+						textSize = cv2.getTextSize(classification, fontFace, fontScale, text_thickness);
+						text_width = textSize[0][0]
+						text_height = textSize[0][1]
+						text_baseline = textSize[1]
+						# print("text_width = {}").format(text_width)
+						# print("text_height = {}").format(text_height)
+						# print("text_baseline = {}").format(text_baseline)
 
-					text_lower_left = (person_box['xmin']+box_thickness,person_box['ymin']+text_height+box_thickness)
-					text_upper_right = (person_box['xmin']+box_thickness+text_width,person_box['ymin']+box_thickness)
+						text_lower_left = (person_box['xmin']+box_thickness,person_box['ymin']+text_height+box_thickness)
+						text_upper_right = (person_box['xmin']+box_thickness+text_width,person_box['ymin']+box_thickness)
 
-					black_box_lower_left = (person_box['xmin']+box_thickness,person_box['ymin']+text_height+text_baseline+box_thickness)
-					black_box_upper_right = (person_box['xmin']+box_thickness+text_width,person_box['ymin']+box_thickness)
+						black_box_lower_left = (person_box['xmin']+box_thickness,person_box['ymin']+text_height+text_baseline+box_thickness)
+						black_box_upper_right = (person_box['xmin']+box_thickness+text_width,person_box['ymin']+box_thickness)
 
-					cv2.rectangle(frame_resized,black_box_lower_left,black_box_upper_right,(0,0,0),-1)
-					cv2.putText(frame_resized,classification,text_lower_left, fontFace, fontScale, text_color,text_thickness,cv2.LINE_AA)
-					
-					skele_image_filename = cfg['save_folder'] + cfg['single_filename'] + "_skele_{}.png".format(person_number)
-					# print("skele_image_filename: {}").format(skele_image_filename)
-					skele_image = datum.cvOutputData
+						cv2.rectangle(frame_resized,black_box_lower_left,black_box_upper_right,(0,0,0),-1)
+						cv2.putText(frame_resized,classification,text_lower_left, fontFace, fontScale, text_color,text_thickness,cv2.LINE_AA)
+						
+						skele_image_filename = cfg['save_folder'] + cfg['single_filename'] + "_skele_{}.png".format(person_number)
+						skele_image = datum.cvOutputData
+						skele_height = skele_image.shape[0]
+						skele_width = skele_image.shape[1]
 
-					skele_height = skele_image.shape[0]
-					skele_width = skele_image.shape[1]
-
-					newX,newY = skele_width*width_scale, skele_height*height_scale
-
-					skele_image_resized = cv2.resize(skele_image,(int(newX),int(newY)))
-
-					cv2.imwrite(skele_image_filename,skele_image_resized)
+						newX,newY = skele_width*width_scale, skele_height*height_scale
+						skele_image_resized = cv2.resize(skele_image,(int(newX),int(newY)))
+						cv2.imwrite(skele_image_filename,skele_image_resized)
 		
-
-
-		# cv2.imshow("skeleton", datum.cvOutputData)
-		# cv2.waitKey(0)
-		# cv2.destroyWindow("skeleton")
 
 
 	# return bounding boxes to original image dimensions
