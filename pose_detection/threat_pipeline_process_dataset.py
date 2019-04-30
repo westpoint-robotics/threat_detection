@@ -107,6 +107,7 @@ def main():
 	# Load images
 	images_processed = 0
 	keypoints_generated = 0
+	pistols_detected = 0
 	for image in image_list:
 		current_image = op_cfg['image_folder']+image
 		print("current_image: {}").format(current_image)
@@ -158,6 +159,7 @@ def main():
 				lower_right = (box['xmax'],box['ymax'])
 				cv2.rectangle(frame_resized,upper_left,lower_right,box_color,box_thickness)
 				cv2.putText(frame_resized,box['class'],upper_left, fontFace, fontScale, box_color,text_thickness,cv2.LINE_AA)
+				pistols_detected += 1
 			
 				# cv2.imshow("frame_resized", frame_resized)
 				# cv2.waitKey(0)
@@ -225,10 +227,11 @@ def main():
 					np.save(keypoint_file, datum.poseKeypoints)
 					keypoints_generated += 1
 
-	images_processed += 1
-	if images_processed%100 == 0:
-		print("\n    Images to process remaining in {} : {} \n").format(cfg['image_folder'], len(image_list)-images_processed)
+		images_processed += 1
+		if images_processed%100 == 0:
+			print("\n    Images to process remaining in {} : {} \n").format(cfg['image_folder'], len(image_list)-images_processed)
 
+	print("total number of pistols detected, correct or incorrect: {}").format(pistols_detected)	
 
 if __name__ == "__main__":
 	main()
