@@ -1,13 +1,17 @@
 # Folder of images to process
-show_images: false
-image_folder: /home/benjamin/datasets/Aggressiveness/Low_ordered/images/
+show_images: true
+image_folder: /home/benjamin/datasets/Aggressiveness/test_images/High/
+# image_folder: /home/benjamin/datasets/Aggressiveness/test_images/Medium/
+# image_folder: /home/benjamin/datasets/Aggressiveness/test_images/Low/
 single_image: COCO_val2014_000000000589.jpg
 
-save_keypoints: true
+save_keypoints: false
 keypoint_folder: /home/benjamin/datasets/Aggressiveness/pipeline_processed/Low_threat_keypoints/
 
 save_output_image: false
 output_folder: /home/benjamin/datasets/Aggressiveness/Low_ordered/overlayed/
+
+timer_bool: false # for timing computations
 
 # directory of folder with pose models(ends with '/')
 model_folder: /home/benjamin/CMU/openpose/models/

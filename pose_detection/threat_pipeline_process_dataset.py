@@ -3,6 +3,7 @@ import sys; sys.path.append('/usr/local/python'); sys.path.append('/usr/local/py
 import numpy as np
 import cv2
 import os
+import time # for measuring elapsted time in YOLO computation
 from os import walk # for listing contents of a directory
 import yaml
 from openpose import pyopenpose as op
@@ -15,6 +16,19 @@ import darknet as dn
 
 import tensorflow as tf
 from feedforward_model import *
+
+def timer_for_YOLO(image_folder, image_list, net, meta):
+	time_start = time.clock()
+	for image in image_list:
+		current_image = image_folder+image
+		cv_image = cv2.imread(current_image,cv2.IMREAD_COLOR) #load image in cv2
+		frame_resized = cv2.resize(cv_image,(dn.network_width(net),dn.network_height(net)),interpolation=cv2.INTER_LINEAR)
+		# reformat cv_image to darknet capability
+		darknet_image = dn.make_image(dn.network_width(net),dn.network_height(net),3)
+		dn.copy_image_from_bytes(darknet_image,frame_resized.tobytes())
+		# Detect objects
+		detections = dn.detect_image(net, meta, darknet_image, thresh=0.25)
+	return time.clock() - time_start
 
 def prediction(skele,model_name='basic_model'):
 	labels = ['high','med','low']
@@ -108,9 +122,20 @@ def main():
 	images_processed = 0
 	keypoints_generated = 0
 	pistols_detected = 0
+	tiny_persons = 0
+	v3_persons = 0
+
+
+	if op_cfg['timer_bool']:
+		tiny_time = timer_for_YOLO(op_cfg['image_folder'], image_list, pistol_net, pistol_meta)
+		v3_time = timer_for_YOLO(op_cfg['image_folder'], image_list, coco_net, coco_meta)
+		print("YOLO-tiny time over 300 images: {} seconds, avg: {} seconds").format(tiny_time, tiny_time/300)	
+		print("YOLO-v3 time over 300 images: {} seconds, avg: {} seconds").format(v3_time, v3_time/300)	
+		return
+
 	for image in image_list:
 		current_image = op_cfg['image_folder']+image
-		print("current_image: {}").format(current_image)
+		# print("current_image: {}").format(current_image)
 		
 		cv_image = cv2.imread(current_image,cv2.IMREAD_COLOR) #load image in cv2
 		height = cv_image.shape[0]
@@ -153,20 +178,26 @@ def main():
 
 		box_thickness = 2
 		box_color = (255,0,0)
+
+		pistols_bool = False
+		tiny_people_bool = False
 		for box in pistol_boxes:
 			if box['class'] == "pistol":
 				upper_left = (box['xmin'],box['ymin'])
 				lower_right = (box['xmax'],box['ymax'])
 				cv2.rectangle(frame_resized,upper_left,lower_right,box_color,box_thickness)
 				cv2.putText(frame_resized,box['class'],upper_left, fontFace, fontScale, box_color,text_thickness,cv2.LINE_AA)
-				pistols_detected += 1
-			
-				# cv2.imshow("frame_resized", frame_resized)
-				# cv2.waitKey(0)
-				# cv2.destroyWindow("frame_resized")
-
+				pistols_bool = True
+		
+			if box['class'] == "person":
+				upper_left = (box['xmin'],box['ymin'])
+				lower_right = (box['xmax'],box['ymax'])
+				cv2.rectangle(frame_resized,upper_left,lower_right,box_color,box_thickness)
+				cv2.putText(frame_resized,box['class'],upper_left, fontFace, fontScale, box_color,text_thickness,cv2.LINE_AA)
+				tiny_people_bool = True
 
 		box_color = (0,0,255)
+		v3_people_bool = False
 		for box in coco_boxes:
 			# print("coco_boxes  {}").format(box['class'])
 			if box['class'] == "person":
@@ -174,6 +205,18 @@ def main():
 				lower_right = (box['xmax'],box['ymax'])
 				cv2.rectangle(frame_resized,upper_left,lower_right,box_color,box_thickness)
 				cv2.putText(frame_resized,box['class'],upper_left, fontFace, fontScale, box_color,text_thickness,cv2.LINE_AA)
+				v3_people_bool = True
+
+		if pistols_bool:
+			pistols_detected += 1
+		if tiny_people_bool:
+			tiny_persons += 1
+		if v3_people_bool:
+			v3_persons += 1
+
+		# cv2.imshow("frame_resized", frame_resized)
+		# cv2.waitKey(0)
+		# cv2.destroyWindow("frame_resized")
 
 		# check overlapping boxes
 		person_boxes = []
@@ -228,10 +271,14 @@ def main():
 					keypoints_generated += 1
 
 		images_processed += 1
-		if images_processed%100 == 0:
-			print("\n    Images to process remaining in {} : {} \n").format(cfg['image_folder'], len(image_list)-images_processed)
+		# if images_processed%100 == 0:
+			# print("\n    Images to process remaining in {} : {} \n").format(op_cfg['image_folder'], len(image_list)-images_processed)
 
-	print("total number of pistols detected, correct or incorrect: {}").format(pistols_detected)	
+	print("Using weights: {}").format(cfg['yolo_weights'] )	
+	print("Checking folder: {}").format(op_cfg['image_folder'])	
+	print("YOLO-tiny pistols detected, correct or incorrect: {}").format(pistols_detected)	
+	print("YOLO-tiny people detected, correct or incorrect: {}").format(tiny_persons)	
+	print("YOLO-v3 people detected, correct or incorrect: {}").format(v3_persons)	
 
 if __name__ == "__main__":
 	main()

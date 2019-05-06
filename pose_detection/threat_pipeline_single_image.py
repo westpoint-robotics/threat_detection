@@ -157,13 +157,16 @@ def main():
 			cv2.rectangle(frame_resized,upper_left,lower_right,box_color,box_thickness)
 			cv2.putText(frame_resized,box['class'],upper_left, fontFace, fontScale, box_color,text_thickness,cv2.LINE_AA)
 
-	# cv2.imshow("frame_resized",frame_resized)
-	# cv2.waitKey(0)
-	# cv2.destroyWindow("frame_resized")
 	
-	# cv2.imshow("skeleton_image",skeleton_image)
-	# cv2.waitKey(0)
-	# cv2.destroyWindow("skeleton_image uncropped")
+	if op_cfg['show_images']:
+		cv2.imshow("frame_resized",frame_resized)
+		cv2.waitKey(0)
+		cv2.destroyWindow("frame_resized")
+	
+	if op_cfg['show_images']:
+		cv2.imshow("skeleton_image",skeleton_image)
+		cv2.waitKey(0)
+		cv2.destroyWindow("skeleton_image uncropped")
 
 	# check overlapping boxes
 	person_boxes = []
@@ -206,9 +209,10 @@ def main():
 		print("crop_img_width * width_scale : {}*{}={}").format(crop_img_width, width_scale, crop_img_width*width_scale)
 		print("crop_img_height * height_scale : {}*{}={}").format(crop_img_height, height_scale, crop_img_height*height_scale)
 
-		# cv2.imshow("crop_img", crop_img)
-		# cv2.waitKey(0)
-		# cv2.destroyWindow("crop_img")
+		if op_cfg['show_images']:
+			cv2.imshow("crop_img", crop_img)
+			cv2.waitKey(0)
+			cv2.destroyWindow("crop_img")
 		
 		# process sub image for skeleton		
 		newX,newY = crop_img_width*width_scale, crop_img_height*height_scale
@@ -220,10 +224,10 @@ def main():
 
 		datum.cvInputData = skel_image
 		opWrapper.emplaceAndPop([datum])
-
-		# cv2.imshow("skeleton", datum.cvOutputData)
-		# cv2.waitKey(0)
-		# cv2.destroyWindow("skeleton")
+		if op_cfg['show_images']:
+			cv2.imshow("skeleton", datum.cvOutputData)
+			cv2.waitKey(0)
+			cv2.destroyWindow("skeleton")
 
 		
 		x = np.empty((1,9,2))

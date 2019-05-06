@@ -1,0 +1,98 @@
+yolo_weights: /home/benjamin/ros/src/usma_threat_ros/yolo/20190506/pistol-yolov3-tiny_100000.weights
+High: 
+Medium:
+Low:
+
+yolo_weights: /home/benjamin/ros/src/usma_threat_ros/yolo/20190506/pistol-yolov3-tiny_150000.weights
+High: 
+Medium:
+Low:
+
+yolo_weights: /home/benjamin/ros/src/usma_threat_ros/yolo/20190506/pistol-yolov3-tiny_200000.weights
+High: 
+Medium:
+Low:
+
+yolo_weights: /home/benjamin/ros/src/usma_threat_ros/yolo/20190506/pistol-yolov3-tiny_250000.weights
+High: 
+YOLO-tiny pistols detected, correct or incorrect: 184
+YOLO-tiny people detected, correct or incorrect: 226
+YOLO-v3 people detected, correct or incorrect: 297
+Medium:
+YOLO-tiny pistols detected, correct or incorrect: 73
+YOLO-tiny people detected, correct or incorrect: 264
+YOLO-v3 people detected, correct or incorrect: 298
+Low:
+YOLO-tiny pistols detected, correct or incorrect: 45
+YOLO-tiny people detected, correct or incorrect: 279
+YOLO-v3 people detected, correct or incorrect: 296
+
+yolo_weights: /home/benjamin/ros/src/usma_threat_ros/yolo/20190506/pistol-yolov3-tiny_300000.weights
+High: 
+YOLO-tiny pistols detected, correct or incorrect: 215
+YOLO-tiny people detected, correct or incorrect: 244
+YOLO-v3 people detected, correct or incorrect: 297
+Medium:
+YOLO-tiny pistols detected, correct or incorrect: 104
+YOLO-tiny people detected, correct or incorrect: 272
+YOLO-v3 people detected, correct or incorrect: 298
+Low:
+YOLO-tiny pistols detected, correct or incorrect: 79
+YOLO-tiny people detected, correct or incorrect: 288
+YOLO-v3 people detected, correct or incorrect: 296
+
+yolo_weights: /home/benjamin/ros/src/usma_threat_ros/yolo/20190506/pistol-yolov3-tiny_350000.weights
+High: 
+YOLO-tiny pistols detected, correct or incorrect: 187
+YOLO-tiny people detected, correct or incorrect: 215
+YOLO-v3 people detected, correct or incorrect: 297
+Medium:
+YOLO-tiny pistols detected, correct or incorrect: 109
+YOLO-tiny people detected, correct or incorrect: 265
+YOLO-v3 people detected, correct or incorrect: 298
+Low:
+YOLO-tiny pistols detected, correct or incorrect: 63
+YOLO-tiny people detected, correct or incorrect: 278
+YOLO-v3 people detected, correct or incorrect: 296
+
+yolo_weights: /home/benjamin/ros/src/usma_threat_ros/yolo/20190506/pistol-yolov3-tiny_400000.weights
+High: 
+YOLO-tiny pistols detected, correct or incorrect: 133
+YOLO-tiny people detected, correct or incorrect: 133
+YOLO-v3 people detected, correct or incorrect: 297
+Medium:
+YOLO-tiny pistols detected, correct or incorrect: 39
+YOLO-tiny people detected, correct or incorrect: 182
+YOLO-v3 people detected, correct or incorrect: 298
+Low:
+YOLO-tiny pistols detected, correct or incorrect: 28
+YOLO-tiny people detected, correct or incorrect: 247
+YOLO-v3 people detected, correct or incorrect: 296
+
+yolo_weights: /home/benjamin/ros/src/usma_threat_ros/yolo/20190506/pistol-yolov3-tiny_450000.weights
+High: 
+YOLO-tiny pistols detected, correct or incorrect: 207
+YOLO-tiny people detected, correct or incorrect: 262
+YOLO-v3 people detected, correct or incorrect: 297
+Medium:
+YOLO-tiny pistols detected, correct or incorrect: 110
+YOLO-tiny people detected, correct or incorrect: 281
+YOLO-v3 people detected, correct or incorrect: 298
+Low:
+YOLO-tiny pistols detected, correct or incorrect: 74
+YOLO-tiny people detected, correct or incorrect: 290
+YOLO-v3 people detected, correct or incorrect: 296
+
+yolo_weights: /home/benjamin/ros/src/usma_threat_ros/yolo/20190506/pistol-yolov3-tiny_500000.weights
+High: 
+YOLO-tiny pistols detected, correct or incorrect: 205
+YOLO-tiny people detected, correct or incorrect: 209
+YOLO-v3 people detected, correct or incorrect: 297
+Medium:
+YOLO-tiny pistols detected, correct or incorrect: 102
+YOLO-tiny people detected, correct or incorrect: 254
+YOLO-v3 people detected, correct or incorrect: 298
+Low:
+YOLO-tiny pistols detected, correct or incorrect: 72
+YOLO-tiny people detected, correct or incorrect: 282
+YOLO-v3 people detected, correct or incorrect: 296
