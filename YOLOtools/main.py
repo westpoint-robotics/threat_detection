@@ -7,8 +7,8 @@
 #
 #-------------------------------------------------------------------------------
 from __future__ import division
-from Tkinter import *
-import tkMessageBox
+from tkinter import *
+import tkinter.messagebox
 from PIL import Image, ImageTk
 import os
 import glob
@@ -135,7 +135,7 @@ class LabelTool():
         print(self.imageDir)
         self.imageList = glob.glob(os.path.join(self.imageDir, '*.jpg'))
         if len(self.imageList) == 0:
-            print 'No .jpg images found in the specified dir!'
+            print('No .jpg images found in the specified dir!')
             return
 
         # default to the 1st image in the collection
@@ -167,7 +167,7 @@ class LabelTool():
             self.egLabels[i].config(image = self.egList[-1], width = SIZE[0], height = SIZE[1])
 
         self.loadImage()
-        print '%d images loaded from %s' %(self.total, s)
+        print('%d images loaded from %s' %(self.total, s))
 
     def loadImage(self):
         # load image
@@ -206,7 +206,7 @@ class LabelTool():
             print(len(self.bboxList))
             for bbox in self.bboxList:
                 f.write(' '.join(map(str, bbox)) + '\n')
-        print 'Image No. %d saved' %(self.cur)
+        print('Image No. %d saved' %(self.cur))
 
 
     def mouseClick(self, event):
