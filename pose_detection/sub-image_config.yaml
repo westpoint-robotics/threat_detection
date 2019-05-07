@@ -1,3 +1,4 @@
+show_images: true
 image_folder: /home/benjamin/datasets/LabeledImages/Images/001/
 label_folder: /home/benjamin/datasets/LabeledImages/Labels/001/
 

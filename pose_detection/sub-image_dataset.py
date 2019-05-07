@@ -91,16 +91,21 @@ def main():
 				# print("potential_threats: {}").format(potential_threats)
 				# create raw sub image, 
 				cropped = img_crop(cv_image, person_box['xmin'], person_box['xmax'], person_box['ymin'], person_box['ymax'])
-				cv2.imshow("cropped", cropped)
-				cv2.waitKey(0)
-				cv2.destroyWindow("cropped")
+				if cfg['show_images']:
+					cv2.imshow("cropped", cropped)
+					cv2.waitKey(0)
+					cv2.destroyWindow("cropped")
 				# calculate skeleton
 				skel_image = cropped.copy()
 
 	
 				datum.cvInputData = skel_image
 				opWrapper.emplaceAndPop([datum])
-
+				if cfg['show_images']:
+					cv2.imshow("skeleton", datum.cvOutputData)
+					cv2.waitKey(0)
+					cv2.destroyWindow("skeleton")
+					
 				# save skeleton image
 				# add pistol to skeleton 
 				# Save numpy arrays
