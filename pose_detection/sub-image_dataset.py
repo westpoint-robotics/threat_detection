@@ -6,8 +6,74 @@ import numpy as np
 import cv2
 from os import walk # for listing contents of a directory
 import yaml
+import random
+from shutil import copyfile # for copying duplicates to folder (for now)
+from shutil import move # for moving duplicates to folder (eventually)
+
+def show_keypoints_on_image(image, joints):
+	joint_image = image.copy()
+	for joint in joints:
+		if joint.all():
+			# print("joint (x,y): ({}, {})").format(joint[0], joint[1])
+			cv2.circle(joint_image, (int(joint[0]),int(joint[1])), 4, (random.randint(0,255),random.randint(0,255),random.randint(0,255)), thickness=-1, lineType=8, shift=0) 
+
+	cv2.circle(joint_image, (int(joints[25][0]),int(joints[25][1])), 5, (0,0,255), thickness=-1, lineType=8, shift=0) 
+
+	print("classify image as either [h]igh, [m]edium, [l]ow, or [z]ero")
+	cv2.namedWindow('joints',cv2.WINDOW_NORMAL)
+	while(1):
+		cv2.imshow('joints',joint_image)
+		cv2.resizeWindow('joints', joint_image.shape[0]*4,joint_image.shape[0]*4)
+		k = cv2.waitKey(0)
+		if k==122: # Esc key to stop
+			threat = 0
+			break
+		if k==104: # h = high
+			threat = 3
+			break
+		if k==109: # m = medium
+			threat = 2
+			break
+		if k==108: # l = low
+			threat = 1
+			break
+		else:
+			print k
+			print("  classify image as either [h]igh, [m]edium, or [l]ow")
+	cv2.destroyWindow("joints")
+	return threat
+
+def check_pistol_cropped_location(potential_threat, cv_image, crop_image_offset):
+	# potential_threat = {
+	# 'xmin':person_box['xmin'],
+	# 'ymin':person_box['ymin'],
+	# 'xmax':person_box['xmax'],
+	# 'ymax':person_box['ymax'], 
+	# 'pistol_x':pistol_box['center_x']-person_box['xmin'], 
+	# 'pistol_y':pistol_box['center_y']-person_box['ymin']
+	# }
+
+	if potential_threat['xmin'] < crop_image_offset: 
+		x = potential_threat['pistol_x'] + potential_threat['xmin']
+	else:
+		x = potential_threat['pistol_x'] + crop_image_offset
+
+	if potential_threat['ymin'] < crop_image_offset: 
+		y = potential_threat['pistol_y'] + potential_threat['ymin']
+	else:
+		y = potential_threat['pistol_y'] + crop_image_offset
+	return x,y 
 
 def img_crop(image, x_min, x_max, y_min, y_max):
+	if (x_min <= 0):
+		x_min = 0
+	if (y_min <=0 ):
+		y_min = 0
+	if (x_max >= image.shape[1]):
+		x_max = image.shape[1]
+	if (y_max >= image.shape[0]):
+		y_max = image.shape[0]
+
 	cropped_image = image[y_min:y_max, x_min:x_max]
 	return cropped_image
 
@@ -22,6 +88,7 @@ def range_overlap(a_min, a_max, b_min, b_max):
 	return (a_min <= b_max) and (b_min <= a_max)
 
 def main():
+	print("\n\n\n\n")
 	# Setup config
 	with open("sub-image_config.yaml", 'r') as ymlfile:
 		if sys.version_info[0] > 2:
@@ -45,77 +112,179 @@ def main():
 		image_files.extend(filenames)
 		break
 
-	# load image and labels
-	
-	current_image = cfg['image_folder'] + image_files[0]
+	# image_filename = "aggressive_000302.jpg"
+	for image_filename in image_files:
+		print("\n\n")
+		# load image and labels
+		current_image = cfg['image_folder'] + image_filename
+		# current_image = cfg['image_folder'] + "aggressive_000302.jpg"
+		print("current_image: {}").format(current_image)
 
-	cv_image = cv2.imread(current_image,cv2.IMREAD_COLOR) #load image in cv2
-	cv_img_height = cv_image.shape[0]
-	cv_img_width = cv_image.shape[1]
+		cv_image = cv2.imread(current_image,cv2.IMREAD_COLOR) #load image in cv2
+		cv_img_height = cv_image.shape[0]
+		cv_img_width = cv_image.shape[1]
+		# print("{}, (w,h): ({},{})").format(current_image, cv_img_width, cv_img_height)
 
-	
-	# print("First image in list: {} : (height, width) = ({},{})").format(image_files[0], cv_img_height, cv_img_width)
+		# load bounding boxes from labels
+		person_boxes = []
+		pistol_boxes = []
+		label_file = cfg['label_folder']+image_filename[:-4]+".txt"
+		print("label file: {}").format(label_file)
+		with open(label_file) as file:
+			for line in file: 
+				line = line.strip().split() #or some other preprocessing
+				# print("line: {}").format(line)
+				box_center_x = float(line[1])*cv_img_width
+				box_center_y = float(line[2])*cv_img_height
+				box_width = float(line[3])*cv_img_width
+				box_height = float(line[4])*cv_img_height
+				x_min = int(round(box_center_x - (box_width/2)))
+				x_max = int(round(box_center_x + (box_width/2)))
+				y_min = int(round(box_center_y - (box_height/2)))
+				y_max = int(round(box_center_y + (box_height/2)))
+				if line[0] == "0": # then it is a pistol
+					# pistol_boxes.append({'xmin':x_min,'ymin':y_min,'xmax':x_max,'ymax':y_max})
+					pistol_boxes.append({
+						'xmin':x_min,
+						'ymin':y_min,
+						'xmax':x_max,
+						'ymax':y_max, 
+						'center_x':box_center_x, 
+						'center_y':box_center_y
+						})
+				if line[0] == "1": # then it is a person
+					person_boxes.append({'xmin':x_min,'ymin':y_min,'xmax':x_max,'ymax':y_max})
+		
+		# print("person_boxes: {}").format(person_boxes)
+		# print("pistol_boxes: {}").format(pistol_boxes)
 
-	person_lines = []
-	pistol_lines = []
-	person_boxes = []
-	pistol_boxes = []
-	with open(cfg['label_folder']+image_files[0][:-4]+".txt") as file:
-		for line in file: 
-			line = line.strip().split() #or some other preprocessing
-			box_center_x = float(line[1])*cv_img_width
-			box_center_y = float(line[2])*cv_img_height
-			box_width = float(line[3])*cv_img_width
-			box_height = float(line[4])*cv_img_height
-			x_min = int(round(box_center_x - (box_width/2)))
-			x_max = int(round(box_center_x + (box_width/2)))
-			y_min = int(round(box_center_y - (box_height/2)))
-			y_max = int(round(box_center_y + (box_height/2)))
-			if line[0] == "0": # then it is a pistol
-				# pistol_boxes.append({'xmin':x_min,'ymin':y_min,'xmax':x_max,'ymax':y_max})
-				pistol_boxes.append({'xmin':x_min,'ymin':y_min,'xmax':x_max,'ymax':y_max, 'center_xy':[box_center_x, box_center_y]})
-			if line[0] == "1": # then it is a person
-				person_boxes.append({'xmin':x_min,'ymin':y_min,'xmax':x_max,'ymax':y_max})
-	
-	# print("person_boxes: {}").format(person_boxes)
-	# print("pistol_boxes: {}").format(pistol_boxes)
+		# check overlapping boxes & associate pistols with people
+		for (dirpath, dirnames, filenames) in walk(cfg['subimage_folder']+'high/images/'):
+			number_highs = len(filenames)
+			break
+		for (dirpath, dirnames, filenames) in walk(cfg['subimage_folder']+'medium/images/'):
+			number_meds = len(filenames)
+			break
+		for (dirpath, dirnames, filenames) in walk(cfg['subimage_folder']+'low/images/'):
+			number_lows = len(filenames)
+			break
+		for (dirpath, dirnames, filenames) in walk(cfg['subimage_folder']+'zero/images/'):
+			number_zeros = len(filenames)
+			break
+		# print("number of (high, medium, low, zero) subimages: ({}, {}, {}, {})").format(number_highs, number_meds, number_lows, number_zeros)
 
-
-	# check overlapping boxes & associate pistols with people
-	potential_threats = []
-	for person_box in person_boxes:
-		for pistol_box in pistol_boxes:
-			# if pistol is associated, 
-			if box_overlap(person_box, pistol_box):
-				potential_threats.append({'xmin':person_box['xmin'],'ymin':person_box['ymin'],'xmax':person_box['xmax'],'ymax':person_box['ymax'], 'pistol_xy':pistol_box['center_xy']})
-				# print("potential_threats: {}").format(potential_threats)
-				# create raw sub image, 
-				cropped = img_crop(cv_image, person_box['xmin'], person_box['xmax'], person_box['ymin'], person_box['ymax'])
-				if cfg['show_images']:
-					cv2.imshow("cropped", cropped)
-					cv2.waitKey(0)
-					cv2.destroyWindow("cropped")
-				# calculate skeleton
-				skel_image = cropped.copy()
-
-	
-				datum.cvInputData = skel_image
-				opWrapper.emplaceAndPop([datum])
-				if cfg['show_images']:
-					cv2.imshow("skeleton", datum.cvOutputData)
-					cv2.waitKey(0)
-					cv2.destroyWindow("skeleton")
+		potential_threats = []
+		for person_box in person_boxes:
+			for pistol_box in pistol_boxes:
+				# if pistol is associated, 
+				if box_overlap(person_box, pistol_box):
+					potential_threat = {
+						'xmin':person_box['xmin'],
+						'ymin':person_box['ymin'],
+						'xmax':person_box['xmax'],
+						'ymax':person_box['ymax'], 
+						'pistol_x':pistol_box['center_x']-person_box['xmin'], 
+						'pistol_y':pistol_box['center_y']-person_box['ymin']
+						}
+					potential_threat['pistol_x'], potential_threat['pistol_y'] = check_pistol_cropped_location(potential_threat, cv_image, cfg['crop_image_offset'])
+					potential_threats.append(potential_threat)
 					
-				# save skeleton image
-				# add pistol to skeleton 
-				# Save numpy arrays
-				if cfg['save_skeltons']:
-					print("Body keypoints: \n {}").format(datum.poseKeypoints)
-					keypoint_file = cfg['keypoint_folder']+"keypoints_{}".format(keypoints_generated)
-					np.save(keypoint_file, datum.poseKeypoints)
-					keypoints_generated += 1
+		for potential_threat in potential_threats:
+			# print("potential_threat: {}").format(potential_threat)
+			# print("potential_threat['xmin']: {}").format(potential_threat['xmin'])
+			# create raw sub image, 
+			cropped = img_crop(cv_image, 
+				potential_threat['xmin']-cfg['crop_image_offset'], 
+				potential_threat['xmax']+cfg['crop_image_offset'], 
+				potential_threat['ymin']-cfg['crop_image_offset'], 
+				potential_threat['ymax']+cfg['crop_image_offset'])
+			# cv2.namedWindow('cropped',cv2.WINDOW_NORMAL)
+			# cv2.imshow("cropped", cropped)
+			# cv2.waitKey(0)
+			# cv2.destroyWindow("cropped")
+
+			# calculate skeleton
+			skel_image = cropped.copy()
+			datum.cvInputData = skel_image
+			opWrapper.emplaceAndPop([datum])
+			skeletons = datum.poseKeypoints
+
+			x = np.empty((1,9,2))
+			rele_dexes = [1,2,3,4,5,6,7,9,12]		
+			right_elbow = 3
+			right_wrist = 4
 
 
+
+			if skeletons.size > 1:
+				# cv2.namedWindow('skeleton',cv2.WINDOW_NORMAL)
+				# cv2.imshow("skeleton", datum.cvOutputData)
+				# cv2.resizeWindow('skeleton', datum.cvOutputData.shape[0]*4,datum.cvOutputData.shape[0]*4)
+
+				for joints in skeletons:
+					# print("joints: {}").format(joints)
+					# print("joints[rele_dexes]: {}").format(joints[rele_dexes])
+					if joints[rele_dexes].all():
+						# add pistol to skeleton 
+						pistol_location = ([potential_threat['pistol_x'], potential_threat['pistol_y'], 0])
+						pistol_joints = np.vstack((joints,pistol_location))
+
+						# ask for user input on threat class
+						threat_class = show_keypoints_on_image(datum.cvOutputData, pistol_joints)
+
+						if threat_class == 3: # high threat
+							print("threat_class: {}").format("high")
+							if cfg['save_skeltons']:
+								image_file = ("{0}{1}high_threat_{2:06d}").format(cfg['subimage_folder'], 'high/images/',number_highs)
+								skeleton_file = ("{0}{1}high_threat_{2:06d}").format(cfg['subimage_folder'], 'high/skeletons/',number_highs)
+								# save skeleton image
+								cv2.imwrite(image_file+".jpg", cropped)
+								# Save numpy arrays
+								np.save(skeleton_file+".npy", pistol_joints)
+								np.savetxt(skeleton_file+".txt", pistol_joints, delimiter=',', fmt='%4.2f')   # X is an array
+							number_highs += 1
+						elif threat_class == 2: # medium threat
+							print("threat_class: {}").format("medium")
+							if cfg['save_skeltons']:
+								image_file = ("{0}{1}medium_threat_{2:06d}").format(cfg['subimage_folder'], 'medium/images/',number_meds)
+								skeleton_file = ("{0}{1}medium_threat_{2:06d}").format(cfg['subimage_folder'], 'medium/skeletons/',number_meds)
+								# save skeleton image
+								cv2.imwrite(image_file+".jpg", cropped)
+								# Save numpy arrays
+								np.save(skeleton_file+".npy", pistol_joints)
+								np.savetxt(skeleton_file+".txt", pistol_joints, delimiter=',', fmt='%4.2f')   # X is an array
+							number_meds += 1
+						elif threat_class == 1: # medium threat
+							print("threat_class: {}").format("low")
+							if cfg['save_skeltons']:
+								image_file = ("{0}{1}low_threat_{2:06d}").format(cfg['subimage_folder'], 'low/images/',number_lows)
+								skeleton_file = ("{0}{1}low_threat_{2:06d}").format(cfg['subimage_folder'], 'low/skeletons/',number_lows)
+								# save skeleton image
+								cv2.imwrite(image_file+".jpg", cropped)
+								# Save numpy arrays
+								np.save(skeleton_file+".npy", pistol_joints)
+								np.savetxt(skeleton_file+".txt", pistol_joints, delimiter=',', fmt='%4.2f')   # X is an array
+							number_lows += 1
+						elif threat_class == 0: # medium threat
+							print("threat_class: {}").format("zero")
+							if cfg['save_skeltons']:
+								image_file = ("{0}{1}zero_threat_{2:06d}").format(cfg['subimage_folder'], 'zero/images/',number_zeros)
+								skeleton_file = ("{0}{1}zero_threat_{2:06d}").format(cfg['subimage_folder'], 'zero/skeletons/',number_zeros)
+								# save skeleton image
+								cv2.imwrite(image_file+".jpg", cropped)
+								# Save numpy arrays
+								np.save(skeleton_file+".npy", pistol_joints)
+								np.savetxt(skeleton_file+".txt", pistol_joints, delimiter=',', fmt='%4.2f')   # X is an array
+							number_zeros += 1
+						else:
+							print("should never get here, something weird happened")
+						#move original image to sorted folder
+
+						print("  {}").format(skeleton_file)
+
+				# cv2.destroyWindow("skeleton")
+
+		move(current_image, cfg['classified_folder'] + image_filename)
 
 
 if __name__ == "__main__":

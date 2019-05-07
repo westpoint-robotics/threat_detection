@@ -1,5 +1,7 @@
+crop_image_offset: 50
 show_images: true
 image_folder: /home/benjamin/datasets/LabeledImages/Images/001/
+classified_folder: /home/benjamin/datasets/LabeledImages/Images/classified/
 label_folder: /home/benjamin/datasets/LabeledImages/Labels/001/
 
 subimage_folder: /home/benjamin/datasets/LabeledImages/subimages/
@@ -7,7 +9,7 @@ subimage_folder: /home/benjamin/datasets/LabeledImages/subimages/
 # subimage_images: /home/benjamin/datasets/LabeledImages/subimages/keypoints/
 # subimage_keypoints: /home/benjamin/datasets/LabeledImages/subimages/keypoints/
 # directory of folder with pose models(ends with '/')
-save_skeltons: false
+save_skeltons: true
 model_folder: /home/benjamin/CMU/openpose/models/
 model_pose: BODY_25
 # DEFINE_string(model_pose,               "BODY_25",      "Model to be used. E.g., `COCO` (18 keypoints), `MPI` (15 keypoints, ~10% faster), "
