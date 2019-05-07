@@ -5,6 +5,8 @@ import cv2
 import os
 import yaml
 from openpose import pyopenpose as op
+import time # for measuring elapsted time in YOLO computation
+import argparse # check if image path is provided
 
 
 #setup and import darknet-yolo
@@ -61,7 +63,11 @@ def imcrop(img, bbox):
         img, x1, x2, y1, y2 = pad_img_to_fit_bbox(img, x1, x2, y1, y2)
    return img[y1:y2, x1:x2, :]
 
-def main():
+if __name__ == "__main__":
+	parser = argparse.ArgumentParser()
+	parser.add_argument("--image_path", help="image_path the string you use here")
+	args = parser.parse_args()
+
 	# Setup yolo config
 	with open("yolo_config.yml", 'r') as ymlfile:
 		if sys.version_info[0] > 2:
@@ -82,15 +88,15 @@ def main():
 	coco_meta = dn.load_meta(coco_data)
 
 	# setup openpose config
-	with open("openpose_config.yml", 'r') as opymlfile:
-		if sys.version_info[0] > 2:
-			op_cfg = yaml.load(opymlfile, Loader=yaml.FullLoader)
-		else:
-			op_cfg = yaml.load(opymlfile)
+	# with open("openpose_config.yml", 'r') as opymlfile:
+	# 	if sys.version_info[0] > 2:
+	# 		op_cfg = yaml.load(opymlfile, Loader=yaml.FullLoader)
+	# 	else:
+	# 		op_cfg = yaml.load(opymlfile)
 	# Custom Params (refer to include/openpose/flags.hpp for more parameters)
 	op_params = dict()
-	op_params["model_folder"] = op_cfg['model_folder']
-	op_params["model_pose"] = op_cfg['model_pose']
+	op_params["model_folder"] = cfg['model_folder']
+	op_params["model_pose"] = cfg['model_pose']
 
 	# Starting OpenPose
 	opWrapper = op.WrapperPython()
@@ -99,7 +105,10 @@ def main():
 	datum = op.Datum()
 
 	# Load image
-	cv_image = cv2.imread(cfg['single_image'] ,cv2.IMREAD_COLOR) #load image in cv2
+	if args.image_path:
+		cv_image = cv2.imread(args.image_path,cv2.IMREAD_COLOR) #load image in cv2
+	else:
+		cv_image = cv2.imread(cfg['single_image'] ,cv2.IMREAD_COLOR) #load image in cv2
 	height = cv_image.shape[0]
 	width = cv_image.shape[1]
 	# print("original height: {}").format(height)
@@ -109,7 +118,9 @@ def main():
 	skeleton_image = cv2.resize(box_image,(dn.network_width(pistol_net),dn.network_height(pistol_net)),interpolation=cv2.INTER_LINEAR)
 
 	# Detect objects
+	time_start = time.clock()
 	frame_resized = cv2.resize(box_image,(dn.network_width(pistol_net),dn.network_height(pistol_net)),interpolation=cv2.INTER_LINEAR)
+	threat_resized = cv2.resize(box_image,(dn.network_width(pistol_net),dn.network_height(pistol_net)),interpolation=cv2.INTER_LINEAR)
 	darknet_image = dn.make_image(dn.network_width(pistol_net),dn.network_height(pistol_net),3)
 	dn.copy_image_from_bytes(darknet_image,frame_resized.tobytes())
 	pistol_detections = dn.detect_image(pistol_net, pistol_meta, darknet_image, thresh=0.25)
@@ -130,8 +141,8 @@ def main():
 	BBoxes = []
 	for box in pistol_boxes:
 		BBoxes.append(box)
-	for box in coco_boxes:
-		BBoxes.append(box)
+	# for box in coco_boxes:
+	# 	BBoxes.append(box)
 
 	fontFace = cv2.FONT_HERSHEY_DUPLEX
 	text_color = (0,0,255)
@@ -139,35 +150,33 @@ def main():
 	text_thickness = 1
 
 	box_thickness = 2
-	box_color = (255,0,0)
+	
 	for box in pistol_boxes:
 		# print("pistol_boxes  {}").format(box['class'])
-		# if box['class'] == "pistol":
+		if box['class'] == "pistol":
+			box_color = (255,0,0)
+		if box['class'] == "person":
+			box_color = (0,0,255)
 		upper_left = (box['xmin'],box['ymin'])
 		lower_right = (box['xmax'],box['ymax'])
 		cv2.rectangle(frame_resized,upper_left,lower_right,box_color,box_thickness)
 		cv2.putText(frame_resized,box['class'],upper_left, fontFace, fontScale, box_color,text_thickness,cv2.LINE_AA)
 
-	box_color = (0,0,255)
-	for box in coco_boxes:
-		# print("coco_boxes  {}").format(box['class'])
-		if box['class'] == "person":
-			upper_left = (box['xmin'],box['ymin'])
-			lower_right = (box['xmax'],box['ymax'])
-			cv2.rectangle(frame_resized,upper_left,lower_right,box_color,box_thickness)
-			cv2.putText(frame_resized,box['class'],upper_left, fontFace, fontScale, box_color,text_thickness,cv2.LINE_AA)
+	# box_color = (0,0,255)
+	# for box in coco_boxes:
+	# 	# print("coco_boxes  {}").format(box['class'])
+	# 	if box['class'] == "person":
+	# 		upper_left = (box['xmin'],box['ymin'])
+	# 		lower_right = (box['xmax'],box['ymax'])
+			# cv2.rectangle(frame_resized,upper_left,lower_right,box_color,box_thickness)
+			# cv2.putText(frame_resized,box['class'],upper_left, fontFace, fontScale, box_color,text_thickness,cv2.LINE_AA)
 
 	
-	if op_cfg['show_images']:
+	if cfg['show_images']:
 		cv2.imshow("frame_resized",frame_resized)
 		cv2.waitKey(0)
 		cv2.destroyWindow("frame_resized")
 	
-	if op_cfg['show_images']:
-		cv2.imshow("skeleton_image",skeleton_image)
-		cv2.waitKey(0)
-		cv2.destroyWindow("skeleton_image uncropped")
-
 	# check overlapping boxes
 	person_boxes = []
 	pistol_boxes = []
@@ -189,7 +198,7 @@ def main():
 	for person_box in potential_threats:
 		person_number +=1
 		# generate sub images for skeleton
-		print("crop image (ymin:ymax), (xmin:xmax) : ({}:{}), ({}:{})").format(person_box["ymin"],person_box["ymax"], person_box["xmin"], person_box["xmax"])
+		# print("crop image (ymin:ymax), (xmin:xmax) : ({}:{}), ({}:{})").format(person_box["ymin"],person_box["ymax"], person_box["xmin"], person_box["xmax"])
 		if (person_box["ymin"] < 0):
 			person_box["ymin"] = 0
 		if (person_box["xmin"] < 0):
@@ -200,16 +209,16 @@ def main():
 		if (person_box["xmax"] > skeleton_image.shape[1]):
 			person_box["xmax"] = skeleton_image.shape[0]
 
-		print("crop image (ymin:ymax), (xmin:xmax) : ({}:{}), ({}:{})").format(person_box["ymin"],person_box["ymax"], person_box["xmin"], person_box["xmax"])
+		# print("crop image (ymin:ymax), (xmin:xmax) : ({}:{}), ({}:{})").format(person_box["ymin"],person_box["ymax"], person_box["xmin"], person_box["xmax"])
 		crop_img = skeleton_image[person_box["ymin"]:person_box["ymax"],  person_box["xmin"]:person_box["xmax"]]
 
 		# rescale sub image back to original dimensions
 		crop_img_height = crop_img.shape[0]
 		crop_img_width = crop_img.shape[1]
-		print("crop_img_width * width_scale : {}*{}={}").format(crop_img_width, width_scale, crop_img_width*width_scale)
-		print("crop_img_height * height_scale : {}*{}={}").format(crop_img_height, height_scale, crop_img_height*height_scale)
+		# print("crop_img_width * width_scale : {}*{}={}").format(crop_img_width, width_scale, crop_img_width*width_scale)
+		# print("crop_img_height * height_scale : {}*{}={}").format(crop_img_height, height_scale, crop_img_height*height_scale)
 
-		if op_cfg['show_images']:
+		if cfg['show_images']:
 			cv2.imshow("crop_img", crop_img)
 			cv2.waitKey(0)
 			cv2.destroyWindow("crop_img")
@@ -224,7 +233,7 @@ def main():
 
 		datum.cvInputData = skel_image
 		opWrapper.emplaceAndPop([datum])
-		if op_cfg['show_images']:
+		if cfg['show_images']:
 			cv2.imshow("skeleton", datum.cvOutputData)
 			cv2.waitKey(0)
 			cv2.destroyWindow("skeleton")
@@ -259,6 +268,7 @@ def main():
 						# print("x: {}").format(x)
 
 						classification = prediction(x)
+						# print("~~~ classification = prediction(x)")
 						# Add text to person box
 						# cv2.rectangle(frame_resized,upper_left,lower_right,box_color,2)
 						
@@ -270,14 +280,17 @@ def main():
 						# print("text_height = {}").format(text_height)
 						# print("text_baseline = {}").format(text_baseline)
 
-						text_lower_left = (person_box['xmin']+box_thickness,person_box['ymin']+text_height+box_thickness)
-						text_upper_right = (person_box['xmin']+box_thickness+text_width,person_box['ymin']+box_thickness)
+						person_upper_left = (person_box['xmin'],person_box['ymin'])
+						person_lower_right = (person_box['xmax'],person_box['ymax'])
+						cv2.rectangle(threat_resized,person_upper_left,person_lower_right,text_color,box_thickness)
 
 						black_box_lower_left = (person_box['xmin']+box_thickness,person_box['ymin']+text_height+text_baseline+box_thickness)
 						black_box_upper_right = (person_box['xmin']+box_thickness+text_width,person_box['ymin']+box_thickness)
+						cv2.rectangle(threat_resized,black_box_lower_left,black_box_upper_right,(0,0,0),-1)
 
-						cv2.rectangle(frame_resized,black_box_lower_left,black_box_upper_right,(0,0,0),-1)
-						cv2.putText(frame_resized,classification,text_lower_left, fontFace, fontScale, text_color,text_thickness,cv2.LINE_AA)
+						text_lower_left = (person_box['xmin']+box_thickness,person_box['ymin']+text_height+box_thickness)
+						text_upper_right = (person_box['xmin']+box_thickness+text_width,person_box['ymin']+box_thickness)
+						cv2.putText(threat_resized,classification,text_lower_left, fontFace, fontScale, text_color,text_thickness,cv2.LINE_AA)
 						
 						skele_image_filename = cfg['save_folder'] + cfg['single_filename'] + "_skele_{}.png".format(person_number)
 						skele_image = datum.cvOutputData
@@ -286,15 +299,19 @@ def main():
 
 						newX,newY = skele_width*width_scale, skele_height*height_scale
 						skele_image_resized = cv2.resize(skele_image,(int(newX),int(newY)))
-						cv2.imwrite(skele_image_filename,skele_image_resized)
+						# cv2.imwrite(skele_image_filename,skele_image_resized)
 		
+
+	elapsed_time = time.clock() - time_start
+	f= open("elapsed_time.txt","a+")
+	f.write(("{}\n").format(elapsed_time))
 
 
 	# return bounding boxes to original image dimensions
-	box_image = cv2.resize(frame_resized,(cv_image.shape[1], cv_image.shape[0]),interpolation=cv2.INTER_LINEAR)	
+	box_image = cv2.resize(threat_resized,(cv_image.shape[1], cv_image.shape[0]),interpolation=cv2.INTER_LINEAR)	
 	box_image_filename = cfg['save_folder'] + cfg['single_filename'] + "_label.png"
 	# print("box_image_filename: {}").format(box_image_filename)
-	cv2.imwrite(box_image_filename,box_image) 
+	# cv2.imwrite(box_image_filename,box_image) 
 
 	# cv2.imshow("box_image", box_image)
 	# cv2.waitKey(0)
@@ -313,10 +330,3 @@ def main():
 	# imageToProcess = cv2.imread(current_image)
 	# datum.cvInputData = imageToProcess
 	# opWrapper.emplaceAndPop([datum])
-
-
-
-if __name__ == "__main__":
-	main()
-
-

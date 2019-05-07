@@ -1,10 +1,56 @@
-# Folder of images to process
-src_folder: /home/benjamin/datasets/test/
-dst_folder: /home/benjamin/datasets/test/output/
-save_folder: /home/benjamin/threat_detection/pose_detection/results/
+show_images: false
+timer_bool: false # for timing computations
 
-single_image: /home/benjamin/datasets/Aggressiveness/test_images/logitec001_20190506.png
-single_filename: logitec001_20190506
+
+save_folder: /home/benjamin/threat_detection/pose_detection/results/
+src_folder: /home/benjamin/datasets/Aggressiveness/test_images/High/
+# src_folder: /home/benjamin/datasets/Aggressiveness/test_images/Medium/
+# src_folder: /home/benjamin/datasets/Aggressiveness/test_images/Low/
+
+
+save_bbox_images: false
+bbox_output_folder: /home/benjamin/datasets/results/High_pistols/
+
+save_output_image: false
+output_folder: /home/benjamin/datasets/Aggressiveness/Low_ordered/overlayed/
+
+# testing images
+# single_image: /home/benjamin/datasets/Aggressiveness/High_ordered/images/high_aggressive_000013.jpg
+# single_image: /home/benjamin/datasets/Aggressiveness/Low_ordered/images/low_aggressive_000003.jpg
+
+
+# good images to use for paper:
+# single_image: /home/benjamin/datasets/Aggressiveness/High_ordered/images/high_aggressive_000010.jpg
+# single_filename: high_aggressive_000010
+# single_image: /home/benjamin/datasets/Aggressiveness/High_ordered/images/high_aggressive_000056.jpg
+# single_filename: high_aggressive_000056
+# single_image: /home/benjamin/datasets/Aggressiveness/High_ordered/images/high_aggressive_000070.jpg
+# single_filename: high_aggressive_000070
+# single_image: /home/benjamin/datasets/Aggressiveness/High_ordered/images/high_aggressive_000156.jpg
+# single_filename: high_aggressive_000156
+
+# single_image: /home/benjamin/datasets/Aggressiveness/test_images/logitec001_20190506.png
+# single_filename: logitec001_20190506
+
+
+single_image: /home/benjamin/datasets/Aggressiveness/High_ordered/images/high_aggressive_000864.jpg
+single_filename: high_aggressive_000864
+
+
+# openpose params
+save_keypoints: false
+keypoint_folder: /home/benjamin/datasets/Aggressiveness/pipeline_processed/Low_threat_keypoints/
+# directory of folder with pose models(ends with '/')
+model_folder: /home/benjamin/CMU/openpose/models/
+model_pose: BODY_25
+# DEFINE_string(model_pose,               "BODY_25",      "Model to be used. E.g., `COCO` (18 keypoints), `MPI` (15 keypoints, ~10% faster), "
+#                                                         "`MPI_4_layers` (15 keypoints, even faster but less accurate).");
+# An array pose_keypoints_2d containing the body part locations and detection confidence formatted as x1,y1,c1,x2,y2,c2,
+# The coordinates x and y can be normalized to the range [0,1], [-1,1], [0, source size], [0, output size], etc., 
+# depending on the flag keypoint_scale (see flag for more information), while c is the confidence score in the range [0,1].
+
+# YOLO Params
+
 
 
 # yolo_savefile: /home/benjamin/datasets/Aggressiveness/coco.jpg
@@ -18,8 +64,8 @@ yolo_config: /home/benjamin/ros/src/usma_threat_ros/yolo/pistol-tiny.cfg
 # yolo_weights: /home/benjamin/ros/src/usma_threat_ros/yolo/20190506/pistol-yolov3-tiny_100000.weights
 # yolo_weights: /home/benjamin/ros/src/usma_threat_ros/yolo/20190506/pistol-yolov3-tiny_150000.weights
 # yolo_weights: /home/benjamin/ros/src/usma_threat_ros/yolo/20190506/pistol-yolov3-tiny_200000.weights
-yolo_weights: /home/benjamin/ros/src/usma_threat_ros/yolo/20190506/pistol-yolov3-tiny_250000.weights
-# yolo_weights: /home/benjamin/ros/src/usma_threat_ros/yolo/20190506/pistol-yolov3-tiny_300000.weights
+# yolo_weights: /home/benjamin/ros/src/usma_threat_ros/yolo/20190506/pistol-yolov3-tiny_250000.weights
+yolo_weights: /home/benjamin/ros/src/usma_threat_ros/yolo/20190506/pistol-yolov3-tiny_300000.weights
 # yolo_weights: /home/benjamin/ros/src/usma_threat_ros/yolo/20190506/pistol-yolov3-tiny_350000.weights
 # yolo_weights: /home/benjamin/ros/src/usma_threat_ros/yolo/20190506/pistol-yolov3-tiny_400000.weights
 # yolo_weights: /home/benjamin/ros/src/usma_threat_ros/yolo/20190506/pistol-yolov3-tiny_450000.weights
@@ -28,21 +74,6 @@ yolo_weights: /home/benjamin/ros/src/usma_threat_ros/yolo/20190506/pistol-yolov3
 # yolo_weights: /home/benjamin/ros/src/usma_threat_ros/yolo/pistol-tiny_last.weights
 # yolo_weights: /home/benjamin/ros/src/usma_threat_ros/yolo/pistol-tiny_300000.weights
 
-# testing images
-# single_image: /home/benjamin/datasets/Aggressiveness/High_ordered/images/high_aggressive_000013.jpg
-# single_image: /home/benjamin/datasets/Aggressiveness/Low_ordered/images/low_aggressive_000003.jpg
-
-
-# good images to use for paper:
-# single_image: /home/benjamin/datasets/Aggressiveness/High_ordered/images/high_aggressive_000056.jpg
-# single_filename: high_aggressive_000056
-# single_image: /home/benjamin/datasets/Aggressiveness/High_ordered/images/high_aggressive_000070.jpg
-# single_filename: high_aggressive_000070
-# single_image: /home/benjamin/datasets/Aggressiveness/High_ordered/images/high_aggressive_000156.jpg
-# single_filename: high_aggressive_000156
-
-# single_image: /home/benjamin/datasets/Aggressiveness/High_ordered/images/high_aggressive_000190.jpg
-# single_filename: high_aggressive_000190
 
 
 

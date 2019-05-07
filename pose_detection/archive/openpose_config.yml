@@ -1,9 +1,12 @@
 # Folder of images to process
 show_images: true
+
+single_image: COCO_val2014_000000000589.jpg
+
 image_folder: /home/benjamin/datasets/Aggressiveness/test_images/High/
 # image_folder: /home/benjamin/datasets/Aggressiveness/test_images/Medium/
 # image_folder: /home/benjamin/datasets/Aggressiveness/test_images/Low/
-single_image: COCO_val2014_000000000589.jpg
+
 
 save_keypoints: false
 keypoint_folder: /home/benjamin/datasets/Aggressiveness/pipeline_processed/Low_threat_keypoints/
