@@ -1,4 +1,4 @@
-show_images: false
+show_images: true
 timer_bool: false # for timing computations
 
 
@@ -33,8 +33,8 @@ output_folder: /home/benjamin/datasets/Aggressiveness/Low_ordered/overlayed/
 # single_filename: logitec001_20190506
 
 
-single_image: /home/benjamin/datasets/Aggressiveness/High_ordered/images/high_aggressive_000864.jpg
-single_filename: high_aggressive_000864
+single_image: /home/benjamin/datasets/Aggressiveness/High_ordered/images/high_aggressive_000071.jpg
+single_filename: high_aggressive_000071
 
 
 # openpose params
@@ -42,9 +42,11 @@ save_keypoints: false
 keypoint_folder: /home/benjamin/datasets/Aggressiveness/pipeline_processed/Low_threat_keypoints/
 # directory of folder with pose models(ends with '/')
 model_folder: /home/benjamin/CMU/openpose/models/
-model_pose: BODY_25
-# DEFINE_string(model_pose,               "BODY_25",      "Model to be used. E.g., `COCO` (18 keypoints), `MPI` (15 keypoints, ~10% faster), "
-#                                                         "`MPI_4_layers` (15 keypoints, even faster but less accurate).");
+# DEFINE_string(model_pose, "BODY_25", # "Model to be used. E.g., 
+model_pose: BODY_25 # default
+# model_pose: COCO # (18 keypoints), 
+# model_pose: MPI # (15 keypoints, ~10% faster), "
+# model_pose: MPI_4_layers # (15 keypoints, even faster but less accurate).");
 # An array pose_keypoints_2d containing the body part locations and detection confidence formatted as x1,y1,c1,x2,y2,c2,
 # The coordinates x and y can be normalized to the range [0,1], [-1,1], [0, source size], [0, output size], etc., 
 # depending on the flag keypoint_scale (see flag for more information), while c is the confidence score in the range [0,1].
@@ -77,3 +79,32 @@ yolo_weights: /home/benjamin/ros/src/usma_threat_ros/yolo/20190506/pistol-yolov3
 
 
 
+# // Result for BODY_25 (25 body parts consisting of COCO + foot)
+# // const std::map<unsigned int, std::string> POSE_BODY_25_BODY_PARTS {
+# //     {0,  "Nose"},
+# //     {1,  "Neck"},
+# //     {2,  "RShoulder"},
+# //     {3,  "RElbow"},
+# //     {4,  "RWrist"},
+# //     {5,  "LShoulder"},
+# //     {6,  "LElbow"},
+# //     {7,  "LWrist"},
+# //     {8,  "MidHip"},
+# //     {9,  "RHip"},
+# //     {10, "RKnee"},
+# //     {11, "RAnkle"},
+# //     {12, "LHip"},
+# //     {13, "LKnee"},
+# //     {14, "LAnkle"},
+# //     {15, "REye"},
+# //     {16, "LEye"},
+# //     {17, "REar"},
+# //     {18, "LEar"},
+# //     {19, "LBigToe"},
+# //     {20, "LSmallToe"},
+# //     {21, "LHeel"},
+# //     {22, "RBigToe"},
+# //     {23, "RSmallToe"},
+# //     {24, "RHeel"},
+# //     {25, "Background"}
+# // };

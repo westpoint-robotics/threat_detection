@@ -32,8 +32,8 @@ datum.cvInputData = imageToProcess
 opWrapper.emplaceAndPop([datum])
 
 # Display Image
-print("Body keypoints: \n" + str(datum.poseKeypoints))
-np.save(imagename[:-4], datum.poseKeypoints)
+# print("Body keypoints: \n" + str(datum.poseKeypoints))
+# np.save(imagename[:-4], datum.poseKeypoints)
 
 cv2.imshow("OpenPose 1.4.0 - Tutorial Python API", datum.cvOutputData)
 cv2.waitKey(0)
