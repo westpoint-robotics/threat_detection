@@ -118,7 +118,19 @@ def main():
 	print("image_folder:      {}").format(cfg['image_folder'])
 	print("label_folder:      {}").format(cfg['label_folder'])
 	print("classified_folder: {}").format(cfg['classified_folder'])
-	print("subimage_folder:   {}").format(cfg['subimage_folder'])
+
+	print("model_pose:        {}").format(cfg['model_pose'])
+	
+
+	if (cfg['model_pose'] == "BODY_25"):
+		subimage_folder = cfg['subimage_body25']
+	elif (cfg['model_pose'] == "MPI"):
+		subimage_folder = cfg['subimage_mpii']
+	else:
+		print("Incorrect setting for skeletons")
+		return
+
+	print("subimage_folder:   {}").format(subimage_folder)
 
 
 	# Setup openpose
@@ -184,19 +196,19 @@ def main():
 		# print("pistol_boxes: {}").format(pistol_boxes)
 
 		# check overlapping boxes & associate pistols with people
-		for (dirpath, dirnames, filenames) in walk(cfg['subimage_folder']+'high/images/'):
+		for (dirpath, dirnames, filenames) in walk(subimage_folder+'high/images/'):
 			number_highs = len(filenames)
 			break
-		for (dirpath, dirnames, filenames) in walk(cfg['subimage_folder']+'medium/images/'):
+		for (dirpath, dirnames, filenames) in walk(subimage_folder+'medium/images/'):
 			number_meds = len(filenames)
 			break
-		for (dirpath, dirnames, filenames) in walk(cfg['subimage_folder']+'mild/images/'):
+		for (dirpath, dirnames, filenames) in walk(subimage_folder+'mild/images/'):
 			number_milds = len(filenames)
 			break
-		for (dirpath, dirnames, filenames) in walk(cfg['subimage_folder']+'low/images/'):
+		for (dirpath, dirnames, filenames) in walk(subimage_folder+'low/images/'):
 			number_lows = len(filenames)
 			break
-		for (dirpath, dirnames, filenames) in walk(cfg['subimage_folder']+'zero/images/'):
+		for (dirpath, dirnames, filenames) in walk(subimage_folder+'zero/images/'):
 			number_zeros = len(filenames)
 			break
 		# print("number of (high, medium, low, zero) subimages: ({}, {}, {}, {})").format(number_highs, number_meds, number_lows, number_zeros)
@@ -263,8 +275,8 @@ def main():
 						if threat_class == 1: # high threat
 							print("    threat_class: {}").format("high")
 							if cfg['save_skeltons']:
-								image_file = ("{0}{1}high_threat_{2:06d}").format(cfg['subimage_folder'], 'high/images/',number_highs)
-								skeleton_file = ("{0}{1}high_threat_{2:06d}").format(cfg['subimage_folder'], 'high/skeletons/',number_highs)
+								image_file = ("{0}{1}high_threat_{2:06d}").format(subimage_folder, 'high/images/',number_highs)
+								skeleton_file = ("{0}{1}high_threat_{2:06d}").format(subimage_folder, 'high/skeletons/',number_highs)
 								cv2.imwrite(image_file+".jpg", cropped) # save skeleton image
 								np.save(skeleton_file+".npy", pistol_joints) # Save numpy arrays
 								np.savetxt(skeleton_file+".txt", pistol_joints, delimiter=',', fmt='%4.2f')   # X is an array
@@ -272,8 +284,8 @@ def main():
 						elif threat_class == 3: # medium threat
 							print("    threat_class: {}").format("medium")
 							if cfg['save_skeltons']:
-								image_file = ("{0}{1}medium_threat_{2:06d}").format(cfg['subimage_folder'], 'medium/images/',number_meds)
-								skeleton_file = ("{0}{1}medium_threat_{2:06d}").format(cfg['subimage_folder'], 'medium/skeletons/',number_meds)
+								image_file = ("{0}{1}medium_threat_{2:06d}").format(subimage_folder, 'medium/images/',number_meds)
+								skeleton_file = ("{0}{1}medium_threat_{2:06d}").format(subimage_folder, 'medium/skeletons/',number_meds)
 								cv2.imwrite(image_file+".jpg", cropped) # save skeleton image
 								np.save(skeleton_file+".npy", pistol_joints) # Save numpy arrays
 								np.savetxt(skeleton_file+".txt", pistol_joints, delimiter=',', fmt='%4.2f')   # X is an array
@@ -281,8 +293,8 @@ def main():
 						elif threat_class == 5: # mild threat
 							print("    threat_class: {}").format("mild")
 							if cfg['save_skeltons']:
-								image_file = ("{0}{1}mild_threat_{2:06d}").format(cfg['subimage_folder'], 'mild/images/',number_milds)
-								skeleton_file = ("{0}{1}mild_threat_{2:06d}").format(cfg['subimage_folder'], 'mild/skeletons/',number_milds)
+								image_file = ("{0}{1}mild_threat_{2:06d}").format(subimage_folder, 'mild/images/',number_milds)
+								skeleton_file = ("{0}{1}mild_threat_{2:06d}").format(subimage_folder, 'mild/skeletons/',number_milds)
 								cv2.imwrite(image_file+".jpg", cropped) # save skeleton image
 								np.save(skeleton_file+".npy", pistol_joints) # Save numpy arrays
 								np.savetxt(skeleton_file+".txt", pistol_joints, delimiter=',', fmt='%4.2f')   # X is an array
@@ -290,8 +302,8 @@ def main():
 						elif threat_class == 7: # low threat
 							print("    threat_class: {}").format("low")
 							if cfg['save_skeltons']:
-								image_file = ("{0}{1}low_threat_{2:06d}").format(cfg['subimage_folder'], 'low/images/',number_lows)
-								skeleton_file = ("{0}{1}low_threat_{2:06d}").format(cfg['subimage_folder'], 'low/skeletons/',number_lows)
+								image_file = ("{0}{1}low_threat_{2:06d}").format(subimage_folder, 'low/images/',number_lows)
+								skeleton_file = ("{0}{1}low_threat_{2:06d}").format(subimage_folder, 'low/skeletons/',number_lows)
 								cv2.imwrite(image_file+".jpg", cropped) # save skeleton image
 								np.save(skeleton_file+".npy", pistol_joints) # Save numpy arrays
 								np.savetxt(skeleton_file+".txt", pistol_joints, delimiter=',', fmt='%4.2f')   # X is an array
@@ -299,8 +311,8 @@ def main():
 						elif threat_class == 0: # zero threat
 							print("    threat_class: {}").format("zero")
 							if cfg['save_skeltons']:
-								image_file = ("{0}{1}zero_threat_{2:06d}").format(cfg['subimage_folder'], 'zero/images/',number_zeros)
-								skeleton_file = ("{0}{1}zero_threat_{2:06d}").format(cfg['subimage_folder'], 'zero/skeletons/',number_zeros)
+								image_file = ("{0}{1}zero_threat_{2:06d}").format(subimage_folder, 'zero/images/',number_zeros)
+								skeleton_file = ("{0}{1}zero_threat_{2:06d}").format(subimage_folder, 'zero/skeletons/',number_zeros)
 								cv2.imwrite(image_file+".jpg", cropped) # save skeleton image
 								np.save(skeleton_file+".npy", pistol_joints) # Save numpy arrays
 								np.savetxt(skeleton_file+".txt", pistol_joints, delimiter=',', fmt='%4.2f')   # X is an array
