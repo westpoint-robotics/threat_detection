@@ -10,7 +10,11 @@ def main():
     with open("rename_config.yml", 'r') as ymlfile:
         cfg = yaml.load(ymlfile)
 
-    # walk 'unique' for renamable list
+    print("original_path: {}").format(cfg['original_path'])
+    print("renamed_path: {}").format(cfg['renamed_path'])
+    print("renamed_prefix: {}").format(cfg['renamed_prefix'])
+
+    # walk source folder for renamable list
     unnamed_list = []
     for (dirpath, dirnames, filenames) in walk(cfg['original_path']):
         unnamed_list.extend(filenames)
@@ -24,7 +28,7 @@ def main():
         # print("  renaming " + current_name)
         # print("   as ")
         print("  " + new_name)
-        # copyfile(current_name, new_name) 
+        copyfile(current_name, new_name) 
 
         img = cv2.imread(current_name)
 

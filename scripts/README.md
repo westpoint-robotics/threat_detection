@@ -40,3 +40,20 @@ This loads images, scales them down to 10,000 square pixels, then computes ransa
 	sudo apt install python3-pip
 	pip install opencv-python --user
 	pip install scikit-image --user
+
+
+# package contents : a collection of file management scripts
+## rename.py
+Use this script to rename a folder of images to have a common prefix and a six digit serialization.  Use rename_config.yml to change folders
+
+	<!-- directory of folder with original file name (ends with '/') -->
+	original_path: /home/benjamin/threat_detection/datasets/Aggressiveness/Low/
+	<!-- original_path: /home/benjamin/threat_detection/YOLOtools/readme_figs/ -->
+
+	<!-- where to put renamed images (ends with '/') -->
+	renamed_path: /home/benjamin/threat_detection/datasets/Aggressiveness/Low_ordered/
+	<!-- renamed_path: /home/benjamin/threat_detection/YOLOtools/ -->
+
+	<!-- numbers will be appended, suggests ends with '_' -->
+	renamed_prefix: low_aggressive_
+
