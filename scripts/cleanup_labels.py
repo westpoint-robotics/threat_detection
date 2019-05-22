@@ -26,8 +26,8 @@ def main():
 	while image_list:
 		n+=1
 		current_image = image_list[0]
-		current_name = current_image[7:24]+'.txt'
-		# print("  move({},  {})").format(cfg['label_path']+current_name, cfg['label_dest'])
+		current_name = current_image[7:-4]+'.txt'
+		print("  move({},  {})").format(cfg['label_path']+current_name, cfg['label_dest'])
 
 		try:
 			sh.move(cfg['label_path']+current_name, cfg['label_dest'])

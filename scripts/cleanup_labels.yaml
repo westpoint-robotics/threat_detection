@@ -1,10 +1,11 @@
 # directory of folder with deleted duplicate images
 image_path: /home/benjamin/datasets/FiveClassThreats/geeqie_deleted/images/
 
-# directory of labels that also need to be removed
-label_path: /home/benjamin/datasets/FiveClassThreats/Labels/001/
-
 # destination of label files
 label_dest: /home/benjamin/datasets/FiveClassThreats/geeqie_deleted/labels/
+
+# directory of labels that also need to be removed
+label_path: /home/benjamin/datasets/FiveClassThreats/labels/001/
+
 
 

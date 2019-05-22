@@ -38,6 +38,7 @@ def show_keypoints_on_image(image, joints):
 		print("  (0)zero:   pistol is erroneously associated with skeleton, or skeleton is poorly formed such that the association is bad")
 		cv2.imshow('joints',joint_image)
 		cv2.resizeWindow('joints', joint_image.shape[0]*4,joint_image.shape[0]*4)
+		
 		k = cv2.waitKey(0)
 		if k==122: # Esc key to stop
 			threat = 0
@@ -167,31 +168,36 @@ def main():
 		pistol_boxes = []
 		label_file = cfg['label_folder']+image_filename[:-4]+".txt"
 		print("label file: {}").format(label_file)
-		with open(label_file) as file:
-			for line in file: 
-				line = line.strip().split() #or some other preprocessing
-				# print("line: {}").format(line)
-				box_center_x = float(line[1])*cv_img_width
-				box_center_y = float(line[2])*cv_img_height
-				box_width = float(line[3])*cv_img_width
-				box_height = float(line[4])*cv_img_height
-				x_min = int(round(box_center_x - (box_width/2)))
-				x_max = int(round(box_center_x + (box_width/2)))
-				y_min = int(round(box_center_y - (box_height/2)))
-				y_max = int(round(box_center_y + (box_height/2)))
-				if line[0] == "0": # then it is a pistol
-					# pistol_boxes.append({'xmin':x_min,'ymin':y_min,'xmax':x_max,'ymax':y_max})
-					pistol_boxes.append({
-						'xmin':x_min,
-						'ymin':y_min,
-						'xmax':x_max,
-						'ymax':y_max, 
-						'center_x':box_center_x, 
-						'center_y':box_center_y
-						})
-				if line[0] == "1": # then it is a person
-					person_boxes.append({'xmin':x_min,'ymin':y_min,'xmax':x_max,'ymax':y_max})
-		
+
+		try:
+			with open(label_file) as file:
+				for line in file: 
+					line = line.strip().split() #or some other preprocessing
+					# print("line: {}").format(line)
+					box_center_x = float(line[1])*cv_img_width
+					box_center_y = float(line[2])*cv_img_height
+					box_width = float(line[3])*cv_img_width
+					box_height = float(line[4])*cv_img_height
+					x_min = int(round(box_center_x - (box_width/2)))
+					x_max = int(round(box_center_x + (box_width/2)))
+					y_min = int(round(box_center_y - (box_height/2)))
+					y_max = int(round(box_center_y + (box_height/2)))
+					if line[0] == "0": # then it is a pistol
+						# pistol_boxes.append({'xmin':x_min,'ymin':y_min,'xmax':x_max,'ymax':y_max})
+						pistol_boxes.append({
+							'xmin':x_min,
+							'ymin':y_min,
+							'xmax':x_max,
+							'ymax':y_max, 
+							'center_x':box_center_x, 
+							'center_y':box_center_y
+							})
+					if line[0] == "1": # then it is a person
+						person_boxes.append({'xmin':x_min,'ymin':y_min,'xmax':x_max,'ymax':y_max})
+		except:
+			print("Could not open label file: {}").format(label_file)
+			continue
+
 		# print("person_boxes: {}").format(person_boxes)
 		# print("pistol_boxes: {}").format(pistol_boxes)
 
@@ -321,7 +327,7 @@ def main():
 							print("should never get here, something weird happened")
 						#move original image to sorted folder
 
-						print("      {}").format(skeleton_file)
+					print("      {}").format(skeleton_file)
 
 				# cv2.destroyWindow("skeleton")
 
