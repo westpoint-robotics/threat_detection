@@ -1,20 +1,22 @@
 crop_image_offset: 50
 show_images: true
 # image_folder contains the labeled source images
-image_folder: /home/benjamin/datasets/FiveClassThreats/images/001/
+image_folder: /home/benjamin/datasets/FullPistol/images/001/
 # label_folder contains the labels of the source images
-label_folder: /home/benjamin/datasets/FiveClassThreats/labels/001/
+label_folder: /home/benjamin/datasets/FullPistol/labels/001/
 # classified_folder location to move images after they have been processed 
-classified_folder: /home/benjamin/datasets/FiveClassThreats/images/classified/
+classified_folder: /home/benjamin/datasets/FullPistol/images/classified/
 # location to put sub images associated with skeletons
-subimage_body25: /home/benjamin/datasets/FiveClassThreats/body_25/
-subimage_mpii: /home/benjamin/datasets/FiveClassThreats/body_mpii/
+subimage_body25: /home/benjamin/datasets/FullPistol/body_25/
+subimage_mpii: /home/benjamin/datasets/FullPistol/body_mpii/
 
 # directory of folder with pose models(ends with '/')
 save_skeltons: true
 model_folder: /home/benjamin/CMU/openpose/models/
-model_pose: BODY_25
-# DEFINE_string(model_pose, "BODY_25", "Model to be used. E.g., 
+# model_pose: BODY_25
+model_pose: MPI
+# DEFINE_string(model_pose, 
+# "BODY_25", "Model to be used. E.g., 
 # `COCO` (18 keypoints), 
 # `MPI` (15 keypoints, ~10% faster),
 # `MPI_4_layers` (15 keypoints, even faster but less accurate).");
@@ -23,3 +25,11 @@ model_pose: BODY_25
 # depending on the flag keypoint_scale (see flag for more information), while c is the confidence score in the range [0,1].
 
 
+# single_image: /home/benjamin/datasets/FullPistol/images/001/aggressive_000031.jpg
+# single_image: /home/benjamin/datasets/FullPistol/images/001/aggressive_000038.jpg
+# single_image: /home/benjamin/datasets/FullPistol/images/001/aggressive_000040.jpg
+# single_image: /home/benjamin/datasets/FullPistol/images/001/aggressive_000050.jpg
+# single_image: /home/benjamin/datasets/FullPistol/images/001/aggressive_000059.jpg
+# single_image: /home/benjamin/datasets/FullPistol/images/001/aggressive_000062.jpg
+
+single_image: /home/benjamin/datasets/FullPistol/images/001/aggressive_000075.jpg

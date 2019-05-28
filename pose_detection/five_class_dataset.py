@@ -21,10 +21,10 @@ def show_keypoints_on_image(image, joints):
 			cv2.circle(joint_image, (int(joint[0]),int(joint[1])), 5, (0,0,0), thickness=-1, lineType=8, shift=0) 
 			cv2.circle(joint_image, (int(joint[0]),int(joint[1])), 2, (255,255,255), thickness=-1, lineType=8, shift=0) 
 
-	cv2.circle(joint_image, (int(joints[25][0]),int(joints[25][1])), 8, (0,0,255), thickness=-1, lineType=8, shift=0) 
-	cv2.circle(joint_image, (int(joints[25][0]),int(joints[25][1])), 6, (255,0,0), thickness=-1, lineType=8, shift=0) 
-	cv2.circle(joint_image, (int(joints[25][0]),int(joints[25][1])), 4, (0,0,255), thickness=-1, lineType=8, shift=0) 
-	cv2.circle(joint_image, (int(joints[25][0]),int(joints[25][1])), 2, (255,0,0), thickness=-1, lineType=8, shift=0) 
+	cv2.circle(joint_image, (int(joints[-1][0]),int(joints[-1][1])), 8, (0,0,255), thickness=-1, lineType=8, shift=0) 
+	cv2.circle(joint_image, (int(joints[-1][0]),int(joints[-1][1])), 6, (255,0,0), thickness=-1, lineType=8, shift=0) 
+	cv2.circle(joint_image, (int(joints[-1][0]),int(joints[-1][1])), 4, (0,0,255), thickness=-1, lineType=8, shift=0) 
+	cv2.circle(joint_image, (int(joints[-1][0]),int(joints[-1][1])), 2, (255,0,0), thickness=-1, lineType=8, shift=0) 
 
 	
 	# 1: 49 # 3: 51 # 5: 53 # 7: 55 # 0: 48
@@ -255,11 +255,20 @@ def main():
 			opWrapper.emplaceAndPop([datum])
 			skeletons = datum.poseKeypoints
 
-			x = np.empty((1,9,2))
-			rele_dexes = [1,2,3,4,5,6,7,9,12]		
-			right_elbow = 3
-			right_wrist = 4
-
+			
+			if (cfg['model_pose'] == "BODY_25"):
+				x = np.empty((1,9,2))
+				rele_dexes = [1,2,3,4,5,6,7,8,9,12]		
+				right_elbow = 3
+				right_wrist = 4
+			elif (cfg['model_pose'] == "MPI"):
+				x = np.empty((1,10,2))
+				rele_dexes = [1,2,3,4,5,6,7,8,11,14]		
+				right_elbow = 3
+				right_wrist = 4
+			else:
+				print("ERROR: MUST CHOSE EITHER 'BODY_25' OR 'MPI' FOR 'model_pose'")
+				return
 
 
 			if skeletons.size > 1:
@@ -286,6 +295,7 @@ def main():
 								cv2.imwrite(image_file+".jpg", cropped) # save skeleton image
 								np.save(skeleton_file+".npy", pistol_joints) # Save numpy arrays
 								np.savetxt(skeleton_file+".txt", pistol_joints, delimiter=',', fmt='%4.2f')   # X is an array
+								print("      {}").format(skeleton_file)
 							number_highs += 1
 						elif threat_class == 3: # medium threat
 							print("    threat_class: {}").format("medium")
@@ -295,6 +305,7 @@ def main():
 								cv2.imwrite(image_file+".jpg", cropped) # save skeleton image
 								np.save(skeleton_file+".npy", pistol_joints) # Save numpy arrays
 								np.savetxt(skeleton_file+".txt", pistol_joints, delimiter=',', fmt='%4.2f')   # X is an array
+								print("      {}").format(skeleton_file)
 							number_meds += 1
 						elif threat_class == 5: # mild threat
 							print("    threat_class: {}").format("mild")
@@ -304,6 +315,7 @@ def main():
 								cv2.imwrite(image_file+".jpg", cropped) # save skeleton image
 								np.save(skeleton_file+".npy", pistol_joints) # Save numpy arrays
 								np.savetxt(skeleton_file+".txt", pistol_joints, delimiter=',', fmt='%4.2f')   # X is an array
+								print("      {}").format(skeleton_file)
 							number_milds += 1
 						elif threat_class == 7: # low threat
 							print("    threat_class: {}").format("low")
@@ -313,6 +325,7 @@ def main():
 								cv2.imwrite(image_file+".jpg", cropped) # save skeleton image
 								np.save(skeleton_file+".npy", pistol_joints) # Save numpy arrays
 								np.savetxt(skeleton_file+".txt", pistol_joints, delimiter=',', fmt='%4.2f')   # X is an array
+								print("      {}").format(skeleton_file)
 							number_lows += 1
 						elif threat_class == 0: # zero threat
 							print("    threat_class: {}").format("zero")
@@ -322,12 +335,14 @@ def main():
 								cv2.imwrite(image_file+".jpg", cropped) # save skeleton image
 								np.save(skeleton_file+".npy", pistol_joints) # Save numpy arrays
 								np.savetxt(skeleton_file+".txt", pistol_joints, delimiter=',', fmt='%4.2f')   # X is an array
+								print("      {}").format(skeleton_file)
 							number_zeros += 1
 						else:
 							print("should never get here, something weird happened")
 						#move original image to sorted folder
 
-					print("      {}").format(skeleton_file)
+
+					
 
 				# cv2.destroyWindow("skeleton")
 
