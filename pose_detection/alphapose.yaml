@@ -1,0 +1,20 @@
+# json_file: /home/benjamin/datasets/Aggressiveness/Low_ordered/alphapose/POSE/alpha-pose-results.json
+json_file: /home/benjamin/datasets/FullPistolSkeletons/body_mpii/alpha_results/POSE/alpha-pose-results.json
+# src_images: /home/benjamin/datasets/Aggressiveness/Low_ordered/images/
+src_images: /home/benjamin/datasets/FullPistolSkeletons/images/001/
+label_folder: /home/benjamin/datasets/FullPistolSkeletons/labels/001/
+
+
+subimage_body25: /home/benjamin/datasets/FullPistolSkeletons/body_25/
+subimage_mpii: /home/benjamin/datasets/FullPistolSkeletons/body_mpii/
+
+# model_pose: BODY_25
+model_pose: MPI
+# DEFINE_string(model_pose, 
+# "BODY_25", "Model to be used. E.g., 
+# `COCO` (18 keypoints), 
+# `MPI` (15 keypoints, ~10% faster),
+# `MPI_4_layers` (15 keypoints, even faster but less accurate).");
+# An array pose_keypoints_2d containing the body part locations and detection confidence formatted as x1,y1,c1,x2,y2,c2,
+# The coordinates x and y can be normalized to the range [0,1], [-1,1], [0, source size], [0, output size], etc., 
+# depending on the flag keypoint_scale (see flag for more information), while c is the confidence score in the range [0,1].
