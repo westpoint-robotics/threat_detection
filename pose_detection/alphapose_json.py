@@ -38,21 +38,26 @@ def _byteify(data, ignore_dicts = False):
 	return data
 
 def draw_skeleton(image, joints):
-	# arrowedLine(Mat& img, Point pt1, Point pt2, const Scalar& color, int thickness=1, int line_type=8, int shift=0, double tipLength=0.1)
-	cv2.line(image, (int(joints[0][0]), int(joints[0][1])), (int(joints[1][0]), int(joints[1][1])), (0,255,0), thickness=1, lineType=8, shift=0) 
-	cv2.line(image, (int(joints[1][0]), int(joints[1][1])), (int(joints[2][0]), int(joints[2][1])), (0,255,0), thickness=1, lineType=8, shift=0) 
-	cv2.line(image, (int(joints[2][0]), int(joints[2][1])), (int(joints[3][0]), int(joints[3][1])), (0,255,0), thickness=1, lineType=8, shift=0) 
-	cv2.line(image, (int(joints[3][0]), int(joints[3][1])), (int(joints[4][0]), int(joints[4][1])), (0,255,0), thickness=1, lineType=8, shift=0) 
-	cv2.line(image, (int(joints[1][0]), int(joints[1][1])), (int(joints[5][0]), int(joints[5][1])), (0,255,0), thickness=1, lineType=8, shift=0) 
-	cv2.line(image, (int(joints[5][0]), int(joints[5][1])), (int(joints[6][0]), int(joints[6][1])), (0,255,0), thickness=1, lineType=8, shift=0) 
-	cv2.line(image, (int(joints[6][0]), int(joints[6][1])), (int(joints[7][0]), int(joints[7][1])), (0,255,0), thickness=1, lineType=8, shift=0) 
-	cv2.line(image, (int(joints[1][0]), int(joints[1][1])), (int(joints[14][0]), int(joints[14][1])), (0,255,0), thickness=1, lineType=8, shift=0) 
-	cv2.line(image, (int(joints[14][0]), int(joints[14][1])), (int(joints[11][0]), int(joints[11][1])), (0,255,0), thickness=1, lineType=8, shift=0) 
-	cv2.line(image, (int(joints[11][0]), int(joints[11][1])), (int(joints[12][0]), int(joints[12][1])), (0,255,0), thickness=1, lineType=8, shift=0) 
-	cv2.line(image, (int(joints[12][0]), int(joints[12][1])), (int(joints[13][0]), int(joints[13][1])), (0,255,0), thickness=1, lineType=8, shift=0) 
-	cv2.line(image, (int(joints[14][0]), int(joints[14][1])), (int(joints[8][0]), int(joints[8][1])), (0,255,0), thickness=1, lineType=8, shift=0) 
-	cv2.line(image, (int(joints[8][0]), int(joints[8][1])), (int(joints[9][0]), int(joints[9][1])), (0,255,0), thickness=1, lineType=8, shift=0) 
-	cv2.line(image, (int(joints[9][0]), int(joints[9][1])), (int(joints[10][0]), int(joints[10][1])), (0,255,0), thickness=1, lineType=8, shift=0) 
+	pairs = [\
+	(0,1), # right shin
+	(1,2), # right thigh
+	(2,6), # right hip
+	(6,3), # left hip
+	(3,4), # left thigh
+	(4,5), # left shin
+	(6,7), # spine
+	(7,8), # neck
+	(8,9), # head
+	(8,12), #right shoulder
+	(12,11), #right bicep
+	(11,10), #right forearm
+	(10,16), #right gun
+	(8,13), #left shoulder
+	(13,14), #left bicep
+	(14,15)] #left forearm
+
+	for pair in pairs:
+		cv2.line(image, (int(joints[pair[0]][0]), int(joints[pair[0]][1])), (int(joints[pair[1]][0]), int(joints[pair[1]][1])), (0,255,0), thickness=1, lineType=8, shift=0) 
 	return image
 
 
@@ -218,7 +223,7 @@ def main():
 
 	print("\n\n")
 	# for entry in jsondata:
-	entry = jsondata[200]
+	entry = jsondata[201]
 	# print(entry)
 	# load image and labels
 	image_filename = entry['image_id']
