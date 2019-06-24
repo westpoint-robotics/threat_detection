@@ -1,10 +1,8 @@
 import sys
 import numpy as np
 import cv2
-from os 
+import os # for testing paths
 from os import walk # for listing contents of a directory
-from os import isdir # for testing paths
-from os import exists # for testing paths
 from shutil import copyfile # for copying duplicates to folder (for now)
 from shutil import move # for moving duplicates to folder (eventually)
 import random
@@ -193,6 +191,20 @@ def range_overlap(a_min, a_max, b_min, b_max):
 	# Neither range is completely greater than the other
 	return (a_min <= b_max) and (b_min <= a_max)
 
+def keep_going():
+	while(1):
+		print("  (y)es keep going, (n)o quit now")
+		continue_screen = cv2.imread("continue_screen.jpg",cv2.IMREAD_COLOR) #load image in cv2
+		cv2.imshow("Continue?",continue_screen)
+		k = cv2.waitKey(0)
+		if k==121: # yes, keep going
+			cv2.destroyWindow("Continue?")
+			return True
+		if k==110: # no, stop
+			cv2.destroyWindow("Continue?")
+			return False
+		else:
+			print k
 
 def main():
 	print("\n\n\n\n\n\n\n")
@@ -204,8 +216,6 @@ def main():
 		else:
 			cfg = yaml.load(ymlfile)
 
-
-	jsondata = json_load_byteified(open(cfg['json_file']))
 
 	if (cfg['model_pose'] == "BODY_25"):
 		subimage_folder = cfg['subimage_body25']
@@ -231,103 +241,163 @@ def main():
 		print("ERROR: MUST CHOSE EITHER 'BODY_25' OR 'MPI' FOR 'model_pose'")
 		return
 
-	number_highs = 0
-	number_meds = 0
-	number_milds = 0
-	number_lows = 0
-	number_zeros = 0
-
-	# check overlapping boxes & associate pistols with people
-	for (dirpath, dirnames, filenames) in walk(subimage_folder+'high/images/'):
-		number_highs = len(filenames)
-		break
-	for (dirpath, dirnames, filenames) in walk(subimage_folder+'medium/images/'):
-		number_meds = len(filenames)
-		break
-	for (dirpath, dirnames, filenames) in walk(subimage_folder+'mild/images/'):
-		number_milds = len(filenames)
-		break
-	for (dirpath, dirnames, filenames) in walk(subimage_folder+'low/images/'):
-		number_lows = len(filenames)
-		break
-	for (dirpath, dirnames, filenames) in walk(subimage_folder+'zero/images/'):
-		number_zeros = len(filenames)
-		break
-
-	print("number_meds: {}").format(number_meds)
-
-
 	print("\n\n")
 
-	print(len(jsondata)/25)
 
+	# list of pickle blocks
+	for (dirpath, dirnames, pickle_files) in walk(cfg['json_blocks']):
+		break
 
- 
-	# n = 0
-	# blockn = []
+	# pickle_file = pickle_files[0]
+	
+	for pickle_file in pickle_files:
+		# print("Do you want to keep going?")
 
-	# for entry in range(n*25, n*25+25):
-	# 	blockn.append(jsondata[entry])
-	# 	print("\n jsondata[{}]: {}").format(entry, jsondata[entry])
-		
-	# print("\n\n\n")
-	# n = 1
-	# blockn = []
-	# for entry in range(n*25, n*25+25):
-	# 	blockn.append(jsondata[entry])
-	# 	print("\n jsondata[{}]: {}").format(entry, jsondata[entry])
+		print("processing block: {}").format(pickle_file)
+		# check to see if block has been processed before
+		if not os.path.isdir(cfg['pickle_blocks']+ pickle_file[:-4]):# then the block has not been processed yet
+			if not keep_going():
+				return
+			os.mkdir(cfg['pickle_blocks']+ pickle_file[:-4])
+			os.mkdir(cfg['pickle_blocks']+ pickle_file[:-4]+"/skeletons/")
+			os.mkdir(cfg['pickle_blocks']+ pickle_file[:-4]+"/skeletons/1_high")
+			os.mkdir(cfg['pickle_blocks']+ pickle_file[:-4]+"/skeletons/2_medium")
+			os.mkdir(cfg['pickle_blocks']+ pickle_file[:-4]+"/skeletons/3_mild")
+			os.mkdir(cfg['pickle_blocks']+ pickle_file[:-4]+"/skeletons/4_low")
+			os.mkdir(cfg['pickle_blocks']+ pickle_file[:-4]+"/skeletons/5_zero")
+			os.mkdir(cfg['pickle_blocks']+ pickle_file[:-4]+"/images/")
+			os.mkdir(cfg['pickle_blocks']+ pickle_file[:-4]+"/images/1_high")
+			os.mkdir(cfg['pickle_blocks']+ pickle_file[:-4]+"/images/2_medium")
+			os.mkdir(cfg['pickle_blocks']+ pickle_file[:-4]+"/images/3_mild")
+			os.mkdir(cfg['pickle_blocks']+ pickle_file[:-4]+"/images/4_low")
+			os.mkdir(cfg['pickle_blocks']+ pickle_file[:-4]+"/images/5_zero")
 
+			with open(cfg['json_blocks']+ pickle_file, 'rb') as handle:
+				json_block = pickle.load(handle)
 
+			number_high = 0
+			number_med = 0
+			number_mild = 0
+			number_low = 0
+			number_zero = 0
 
-	# for entry in range(0, len(jsondata))
-	# for entry in jsondata:
-	# 	# entry = jsondata[201]
-	# 	# print(entry)
-	# 	# load image and labels relating to this json entry
-	# 	image_filename = entry['image_id']
-	# 	current_image = cfg['src_images'] + image_filename
-	# 	print("current_image:  {}").format(current_image)
-	# 	cv_image = cv2.imread(current_image,cv2.IMREAD_COLOR) #load image in cv2
-	# 	cv_img_height = cv_image.shape[0]
-	# 	cv_img_width = cv_image.shape[1]
+			for entry in json_block:
+				print("\n\n\n").format(entry)
+				# print("\n   entry: {}").format(entry)
 
-	# 	label_file = cfg['label_folder']+image_filename[:-4]+".txt"
-	# 	print("label file:     {}").format(label_file)
-	# 	person_boxes = []
-	# 	pistol_boxes = []
+				image_filename = entry['image_id']
+				current_image = cfg['src_images'] + image_filename
+				print("current_image:  {}").format(current_image)
+				cv_image = cv2.imread(current_image,cv2.IMREAD_COLOR) #load image in cv2
+				cv_img_height = cv_image.shape[0]
+				cv_img_width = cv_image.shape[1]
 
-	# 	try:
-	# 		with open(label_file) as file:
-	# 			for line in file: 
-	# 				line = line.strip().split() #or some other preprocessing
-	# 				# print("line: {}").format(line)
-	# 				box_center_x = float(line[1])*cv_img_width
-	# 				box_center_y = float(line[2])*cv_img_height
-	# 				box_width = float(line[3])*cv_img_width
-	# 				box_height = float(line[4])*cv_img_height
-	# 				x_min = int(round(box_center_x - (box_width/2)))
-	# 				x_max = int(round(box_center_x + (box_width/2)))
-	# 				y_min = int(round(box_center_y - (box_height/2)))
-	# 				y_max = int(round(box_center_y + (box_height/2)))
-	# 				if line[0] == "0": # then it is a pistol
-	# 					# pistol_boxes.append({'xmin':x_min,'ymin':y_min,'xmax':x_max,'ymax':y_max})
-	# 					pistol_boxes.append({
-	# 						'xmin':x_min,'ymin':y_min, 'xmax':x_max,'ymax':y_max, 
-	# 						'center_x':box_center_x, 'center_y':box_center_y})
-	# 				if line[0] == "1": # then it is a person
-	# 					person_boxes.append({'xmin':x_min,'ymin':y_min,'xmax':x_max,'ymax':y_max})
-	# 	except:
-	# 		print("Could not open label file: {}").format(label_file)
-	# 		continue
+				label_file = cfg['label_folder']+image_filename[:-4]+".txt"
+				print("label file:     {}").format(label_file)
+				person_boxes = []
+				pistol_boxes = []
 
-	# 	joints = np.asarray(entry['keypoints'])
-	# 	joints = np.reshape(joints, (16, 3))
+				joints = np.asarray(entry['keypoints'])
+				joints = np.reshape(joints, (16, 3))
 
-	# 	jointmax = np.amax(joints, axis=0)
-	# 	jointmin = np.amin(joints, axis=0)
+				jointmax = np.amax(joints, axis=0)
+				jointmin = np.amin(joints, axis=0)
 
-	# 	print("jointmax: {}").format(jointmax)
-	# 	print("jointmin: {}").format(jointmin)
+				print("jointmin:  {0:3d}  {1:3d}").format(int(jointmin[0]),int(jointmin[1]))
+				print("jointmax:  {0:3d}  {1:3d}").format(int(jointmax[0]),int(jointmax[1]))
+
+				try:
+					with open(label_file) as file:
+						for line in file: 
+							line = line.strip().split() #or some other preprocessing
+							# print("line: {}").format(line)
+							box_center_x = float(line[1])*cv_img_width
+							box_center_y = float(line[2])*cv_img_height
+							box_width = float(line[3])*cv_img_width
+							box_height = float(line[4])*cv_img_height
+							x_min = int(round(box_center_x - (box_width/2)))
+							x_max = int(round(box_center_x + (box_width/2)))
+							y_min = int(round(box_center_y - (box_height/2)))
+							y_max = int(round(box_center_y + (box_height/2)))
+							if line[0] == "0": # then it is a pistol
+								# pistol_boxes.append({'xmin':x_min,'ymin':y_min,'xmax':x_max,'ymax':y_max})
+								pistol_boxes.append({
+									'xmin':x_min,'ymin':y_min, 'xmax':x_max,'ymax':y_max, 
+									'center_x':box_center_x, 'center_y':box_center_y})
+							if line[0] == "1": # then it is a person
+								person_boxes.append({'xmin':x_min,'ymin':y_min,'xmax':x_max,'ymax':y_max})
+				except:
+					print("Could not open label file: {}").format(label_file)
+					continue
+
+				for pistol_box in pistol_boxes:
+					cv_image = cv2.imread(current_image,cv2.IMREAD_COLOR) #load image in cv2
+					if joint_overlap(pistol_box, jointmin, jointmax):
+						# add "joint" for gun
+						pistol_location = ([pistol_box['center_x'], pistol_box['center_y'], 0])
+						# print("pistol_location: {}").format(pistol_location)
+						pistol_joints = np.vstack((joints,pistol_location))
+						# draw joints on person and ask for input on classification
+						threat_class, joint_image = show_keypoints_on_image(cv_image, pistol_joints)
+						# print("pistol pixel center: {}, {}").format(pistol_box['center_x'], pistol_box['center_y'])
+						# print("joints 16x3: {}").format(joints)
+						print("threat_class: {}").format(threat_class)
+
+						if threat_class == 1: # high threat
+							print("    threat_class: {}").format("high")
+							if cfg['save_skeltons']:
+								image_file = ("{0}/images/1_high/high_threat_{1:03d}").format(cfg['pickle_blocks']+ pickle_file[:-4], number_high)
+								skeleton_file = ("{0}/skeletons/1_high/high_threat_{1:03d}").format(cfg['pickle_blocks']+ pickle_file[:-4], number_high)
+								cv2.imwrite(image_file+".jpg", joint_image) # save skeleton image
+								np.save(skeleton_file+".npy", pistol_joints) # Save numpy arrays
+								np.savetxt(skeleton_file+".txt", pistol_joints, delimiter=',', fmt='%4.2f')   # X is an array
+								print("      {}").format(skeleton_file)
+								number_high  +=1
+						elif threat_class == 3: # medium threat
+							print("    threat_class: {}").format("medium")
+							if cfg['save_skeltons']:
+								image_file = ("{0}/images/2_medium/medium_threat_{1:03d}").format(cfg['pickle_blocks']+ pickle_file[:-4], number_med)
+								skeleton_file = ("{0}/skeletons/2_medium/medium_threat_{1:03d}").format(cfg['pickle_blocks']+ pickle_file[:-4], number_med)
+								cv2.imwrite(image_file+".jpg", joint_image) # save skeleton image
+								np.save(skeleton_file+".npy", pistol_joints) # Save numpy arrays
+								np.savetxt(skeleton_file+".txt", pistol_joints, delimiter=',', fmt='%4.2f')   # X is an array
+								print("      {}").format(skeleton_file)
+							number_med += 1
+						elif threat_class == 5: # mild threat
+							print("    threat_class: {}").format("mild")
+							if cfg['save_skeltons']:
+								image_file = ("{0}/images/3_mild/mild_threat_{1:03d}").format(cfg['pickle_blocks']+ pickle_file[:-4], number_mild)
+								skeleton_file = ("{0}/skeletons/3_mild/mild_threat_{1:03d}").format(cfg['pickle_blocks']+ pickle_file[:-4], number_mild)
+								cv2.imwrite(image_file+".jpg", joint_image) # save skeleton image
+								np.save(skeleton_file+".npy", pistol_joints) # Save numpy arrays
+								np.savetxt(skeleton_file+".txt", pistol_joints, delimiter=',', fmt='%4.2f')   # X is an array
+								print("      {}").format(skeleton_file)
+							number_mild += 1
+						elif threat_class == 7: # low threat
+							print("    threat_class: {}").format("low")
+							if cfg['save_skeltons']:
+								image_file = ("{0}/images/4_low/low_threat_{1:03d}").format(cfg['pickle_blocks']+ pickle_file[:-4], number_low)
+								skeleton_file = ("{0}/skeletons/4_low/low_threat_{1:03d}").format(cfg['pickle_blocks']+ pickle_file[:-4], number_low)
+								cv2.imwrite(image_file+".jpg", joint_image) # save skeleton image
+								np.save(skeleton_file+".npy", pistol_joints) # Save numpy arrays
+								np.savetxt(skeleton_file+".txt", pistol_joints, delimiter=',', fmt='%4.2f')   # X is an array
+								print("      {}").format(skeleton_file)
+							number_low += 1
+						elif threat_class == 0: # zero threat
+							print("    threat_class: {}").format("zero")
+							if cfg['save_skeltons']:
+								image_file = ("{0}/images/5_zero/zero_threat_{1:03d}").format(cfg['pickle_blocks']+ pickle_file[:-4], number_zero)
+								skeleton_file = ("{0}/skeletons/5_zero/zero_threat_{1:03d}").format(cfg['pickle_blocks']+ pickle_file[:-4], number_zero)
+								cv2.imwrite(image_file+".jpg", joint_image) # save skeleton image
+								np.save(skeleton_file+".npy", pistol_joints) # Save numpy arrays
+								np.savetxt(skeleton_file+".txt", pistol_joints, delimiter=',', fmt='%4.2f')   # X is an array
+								print("      {}").format(skeleton_file)
+							number_zero += 1
+						else:
+							print("should never get here, something weird happened")
+
+if __name__ == "__main__":
+	main()
 
 	# 	for person_box in person_boxes:
 	# 		for pistol_box in pistol_boxes:
@@ -397,17 +467,4 @@ def main():
 	# 					print("should never get here, something weird happened")
 	# 				#move original image to sorted folder
 
-
-
-
-
-if __name__ == "__main__":
-	main()
-
-
-
-# with open('person.json') as f:
-#   data = json.load(f)
-
-# Output: {'name': 'Bob', 'languages': ['English', 'Fench']}
 

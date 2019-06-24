@@ -1,12 +1,16 @@
 # json_file: /home/benjamin/datasets/Aggressiveness/Low_ordered/alphapose/POSE/alpha-pose-results.json
 json_file: /home/benjamin/datasets/FullPistolSkeletons/body_mpii/alpha_results/POSE/alpha-pose-results.json
+json_blocks: /home/benjamin/datasets/FullPistolSkeletons/body_mpii/alpha_results/Poses/
+pickle_blocks: /home/benjamin/datasets/FullPistolSkeletons/body_mpii/pickle_blocks/
 # src_images: /home/benjamin/datasets/Aggressiveness/Low_ordered/images/
 src_images: /home/benjamin/datasets/FullPistolSkeletons/images/001/
 label_folder: /home/benjamin/datasets/FullPistolSkeletons/labels/001/
-
+classified_folder: /home/benjamin/datasets/FullPistolSkeletons/images/classified/
 
 subimage_body25: /home/benjamin/datasets/FullPistolSkeletons/body_25/
 subimage_mpii: /home/benjamin/datasets/FullPistolSkeletons/body_mpii/
+
+save_skeltons: true
 
 # model_pose: BODY_25
 model_pose: MPI
