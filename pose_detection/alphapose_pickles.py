@@ -181,10 +181,10 @@ def box_overlap(human_box, gun_box):
 	y_bool = range_overlap(human_box["ymin"], human_box["ymax"], gun_box["ymin"], gun_box["ymax"])
 	return x_bool and y_bool
 
-def joint_overlap(human_box, jointmin, jointmax):
+def joint_overlap(bounding_box, jointmin, jointmax):
 	# Overlapping rectangles overlap both horizontally & vertically
-	x_bool = range_overlap(human_box["xmin"], human_box["xmax"], jointmin[0], jointmax[0])
-	y_bool = range_overlap(human_box["ymin"], human_box["ymax"], jointmin[1], jointmax[1])
+	x_bool = range_overlap(bounding_box["xmin"], bounding_box["xmax"], jointmin[0]+50, jointmax[0]+50)
+	y_bool = range_overlap(bounding_box["ymin"], bounding_box["ymax"], jointmin[1]-50, jointmax[1]-50)
 	return x_bool and y_bool
 
 def range_overlap(a_min, a_max, b_min, b_max):
@@ -215,7 +215,6 @@ def main():
 			cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
 		else:
 			cfg = yaml.load(ymlfile)
-
 
 	if (cfg['model_pose'] == "BODY_25"):
 		subimage_folder = cfg['subimage_body25']
@@ -294,7 +293,6 @@ def main():
 
 				label_file = cfg['label_folder']+image_filename[:-4]+".txt"
 				print("label file:     {}").format(label_file)
-				person_boxes = []
 				pistol_boxes = []
 
 				joints = np.asarray(entry['keypoints'])
@@ -324,8 +322,6 @@ def main():
 								pistol_boxes.append({
 									'xmin':x_min,'ymin':y_min, 'xmax':x_max,'ymax':y_max, 
 									'center_x':box_center_x, 'center_y':box_center_y})
-							if line[0] == "1": # then it is a person
-								person_boxes.append({'xmin':x_min,'ymin':y_min,'xmax':x_max,'ymax':y_max})
 				except:
 					print("Could not open label file: {}").format(label_file)
 					continue
@@ -398,73 +394,4 @@ def main():
 
 if __name__ == "__main__":
 	main()
-
-	# 	for person_box in person_boxes:
-	# 		for pistol_box in pistol_boxes:
-	# 			cv_image = cv2.imread(current_image,cv2.IMREAD_COLOR) #load image in cv2
-	# 			if box_overlap(person_box, pistol_box) and joint_overlap(person_box, jointmin, jointmax):
-	# 				# add "joint" for gun
-	# 				pistol_location = ([pistol_box['center_x'], pistol_box['center_y'], 0])
-	# 				# print("pistol_location: {}").format(pistol_location)
-	# 				pistol_joints = np.vstack((joints,pistol_location))
-	# 				# draw joints on person and ask for input on classification
-	# 				threat_class, joint_image = show_keypoints_on_image(cv_image, pistol_joints)
-	# 				# print("pistol pixel center: {}, {}").format(pistol_box['center_x'], pistol_box['center_y'])
-	# 				# print("joints 16x3: {}").format(joints)
-	# 				print("threat_class: {}").format(threat_class)
-
-	# 				if threat_class == 1: # high threat
-	# 					print("    threat_class: {}").format("high")
-	# 					if cfg['save_skeltons']:
-	# 						image_file = ("{0}{1}high_threat_{2:06d}").format(subimage_folder, 'high/images/',number_highs)
-	# 						skeleton_file = ("{0}{1}high_threat_{2:06d}").format(subimage_folder, 'high/skeletons/',number_highs)
-	# 						cv2.imwrite(image_file+".jpg", joint_image) # save skeleton image
-	# 						np.save(skeleton_file+".npy", pistol_joints) # Save numpy arrays
-	# 						np.savetxt(skeleton_file+".txt", pistol_joints, delimiter=',', fmt='%4.2f')   # X is an array
-	# 						print("      {}").format(skeleton_file)
-	# 					number_highs += 1
-	# 				elif threat_class == 3: # medium threat
-	# 					print("    threat_class: {}").format("medium")
-	# 					if cfg['save_skeltons']:
-	# 						image_file = ("{0}{1}medium_threat_{2:06d}").format(subimage_folder, 'medium/images/',number_meds)
-	# 						skeleton_file = ("{0}{1}medium_threat_{2:06d}").format(subimage_folder, 'medium/skeletons/',number_meds)
-	# 						cv2.imwrite(image_file+".jpg", joint_image) # save skeleton image
-	# 						np.save(skeleton_file+".npy", pistol_joints) # Save numpy arrays
-	# 						np.savetxt(skeleton_file+".txt", pistol_joints, delimiter=',', fmt='%4.2f')   # X is an array
-	# 						print("      {}").format(skeleton_file)
-	# 					number_meds += 1
-	# 				elif threat_class == 5: # mild threat
-	# 					print("    threat_class: {}").format("mild")
-	# 					if cfg['save_skeltons']:
-	# 						image_file = ("{0}{1}mild_threat_{2:06d}").format(subimage_folder, 'mild/images/',number_milds)
-	# 						skeleton_file = ("{0}{1}mild_threat_{2:06d}").format(subimage_folder, 'mild/skeletons/',number_milds)
-	# 						cv2.imwrite(image_file+".jpg", joint_image) # save skeleton image
-	# 						np.save(skeleton_file+".npy", pistol_joints) # Save numpy arrays
-	# 						np.savetxt(skeleton_file+".txt", pistol_joints, delimiter=',', fmt='%4.2f')   # X is an array
-	# 						print("      {}").format(skeleton_file)
-	# 					number_milds += 1
-	# 				elif threat_class == 7: # low threat
-	# 					print("    threat_class: {}").format("low")
-	# 					if cfg['save_skeltons']:
-	# 						image_file = ("{0}{1}low_threat_{2:06d}").format(subimage_folder, 'low/images/',number_lows)
-	# 						skeleton_file = ("{0}{1}low_threat_{2:06d}").format(subimage_folder, 'low/skeletons/',number_lows)
-	# 						cv2.imwrite(image_file+".jpg", joint_image) # save skeleton image
-	# 						np.save(skeleton_file+".npy", pistol_joints) # Save numpy arrays
-	# 						np.savetxt(skeleton_file+".txt", pistol_joints, delimiter=',', fmt='%4.2f')   # X is an array
-	# 						print("      {}").format(skeleton_file)
-	# 					number_lows += 1
-	# 				elif threat_class == 0: # zero threat
-	# 					print("    threat_class: {}").format("zero")
-	# 					if cfg['save_skeltons']:
-	# 						image_file = ("{0}{1}zero_threat_{2:06d}").format(subimage_folder, 'zero/images/',number_zeros)
-	# 						skeleton_file = ("{0}{1}zero_threat_{2:06d}").format(subimage_folder, 'zero/skeletons/',number_zeros)
-	# 						cv2.imwrite(image_file+".jpg", joint_image) # save skeleton image
-	# 						np.save(skeleton_file+".npy", pistol_joints) # Save numpy arrays
-	# 						np.savetxt(skeleton_file+".txt", pistol_joints, delimiter=',', fmt='%4.2f')   # X is an array
-	# 						print("      {}").format(skeleton_file)
-	# 					number_zeros += 1
-	# 				else:
-	# 					print("should never get here, something weird happened")
-	# 				#move original image to sorted folder
-
 
