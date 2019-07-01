@@ -65,12 +65,12 @@ def poll_skeleton(joints):
 
 def draw_skeleton(image, joints):
 	pairs = [\
-	(0,1), # right shin
-	(1,2), # right thigh
-	(2,6), # right hip
-	(6,3), # left hip
-	(3,4), # left thigh
-	(4,5), # left shin
+	# (0,1), # right shin
+	# (1,2), # right thigh
+	# (2,6), # right hip
+	# (6,3), # left hip
+	# (3,4), # left thigh
+	# (4,5), # left shin
 	(6,7), # spine
 	(7,8), # neck
 	(8,9), # head
@@ -197,10 +197,10 @@ def keep_going():
 		continue_screen = cv2.imread("continue_screen.jpg",cv2.IMREAD_COLOR) #load image in cv2
 		cv2.imshow("Continue?",continue_screen)
 		k = cv2.waitKey(0)
-		if k==121: # yes, keep going
+		if k==43: # yes, keep going
 			cv2.destroyWindow("Continue?")
 			return True
-		if k==110: # no, stop
+		if k==45: # no, stop
 			cv2.destroyWindow("Continue?")
 			return False
 		else:
@@ -286,6 +286,7 @@ def main():
 
 				image_filename = entry['image_id']
 				current_image = cfg['src_images'] + image_filename
+				print("pickle_file:    {}").format(pickle_file)
 				print("current_image:  {}").format(current_image)
 				cv_image = cv2.imread(current_image,cv2.IMREAD_COLOR) #load image in cv2
 				cv_img_height = cv_image.shape[0]
@@ -301,8 +302,8 @@ def main():
 				jointmax = np.amax(joints, axis=0)
 				jointmin = np.amin(joints, axis=0)
 
-				print("jointmin:  {0:3d}  {1:3d}").format(int(jointmin[0]),int(jointmin[1]))
-				print("jointmax:  {0:3d}  {1:3d}").format(int(jointmax[0]),int(jointmax[1]))
+				# print("jointmin:  {0:3d}  {1:3d}").format(int(jointmin[0]),int(jointmin[1]))
+				# print("jointmax:  {0:3d}  {1:3d}").format(int(jointmax[0]),int(jointmax[1]))
 
 				try:
 					with open(label_file) as file:

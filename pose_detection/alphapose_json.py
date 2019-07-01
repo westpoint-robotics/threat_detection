@@ -1,7 +1,6 @@
 import sys
 import numpy as np
 import cv2
-from os 
 from os import walk # for listing contents of a directory
 from os import isdir # for testing paths
 from os import exists # for testing paths
