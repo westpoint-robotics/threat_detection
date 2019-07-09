@@ -19,10 +19,3 @@ model_pose: BODY_25
 # depending on the flag keypoint_scale (see flag for more information), while c is the confidence score in the range [0,1].
 
 
-# high_threat_000039
-# high_threat_000245
-# high_threat_000249
-# high_threat_000317
-# high_threat_000318
-# high_threat_000325
-# high_threat_000399

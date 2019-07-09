@@ -13,8 +13,8 @@ subimage_mpii: /home/benjamin/datasets/FullPistolSkeletons/body_mpii/
 # directory of folder with pose models(ends with '/')
 save_skeltons: true
 model_folder: /home/benjamin/CMU/openpose/models/
-# model_pose: BODY_25
-model_pose: MPI
+model_pose: BODY_25
+# model_pose: MPI
 # DEFINE_string(model_pose, 
 # "BODY_25", "Model to be used. E.g., 
 # `COCO` (18 keypoints), 
@@ -32,4 +32,13 @@ model_pose: MPI
 # single_image: /home/benjamin/datasets/FullPistol/images/001/aggressive_000059.jpg
 # single_image: /home/benjamin/datasets/FullPistol/images/001/aggressive_000062.jpg
 
-single_image: /home/benjamin/datasets/FullPistol/images/001/aggressive_000075.jpg
+single_image: /home/benjamin/datasets/LabeledImages/subimages/high/images/high_threat_000317.jpg
+
+
+# high_threat_000039
+# high_threat_000245
+# high_threat_000249
+# high_threat_000317
+# high_threat_000318
+# high_threat_000325
+# high_threat_000399
