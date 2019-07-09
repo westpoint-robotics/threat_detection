@@ -9,7 +9,7 @@ import yaml
 from openpose import pyopenpose as op
 import numpy as np
 
-with open("five_class_dataset.yaml", 'r') as ymlfile:
+with open("openpose_single_image.yaml", 'r') as ymlfile:
     if sys.version_info[0] > 2:
         cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
     else:

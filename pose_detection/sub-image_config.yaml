@@ -17,3 +17,12 @@ model_pose: BODY_25
 # An array pose_keypoints_2d containing the body part locations and detection confidence formatted as x1,y1,c1,x2,y2,c2,
 # The coordinates x and y can be normalized to the range [0,1], [-1,1], [0, source size], [0, output size], etc., 
 # depending on the flag keypoint_scale (see flag for more information), while c is the confidence score in the range [0,1].
+
+
+# high_threat_000039
+# high_threat_000245
+# high_threat_000249
+# high_threat_000317
+# high_threat_000318
+# high_threat_000325
+# high_threat_000399
