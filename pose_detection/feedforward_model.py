@@ -29,6 +29,7 @@ class feedforward(object):
                  train_keep_prob=[.7], activation=tf.nn.relu):
         # Ensures that the hidden layers have corresponding keep probs
         assert(len(hidden_layer_size) == len(train_keep_prob))
+        tf.reset_default_graph()
 
         # Sets variables for later use
         self.input_size = input_size
@@ -59,7 +60,7 @@ class feedforward(object):
                                       activation=self.activation)
         self.hidden = tf.layers.dropout(self.hidden,
                                         rate=self.train_keep_prob[0])
-
+ 
         for i in range(1,len(self.hidden_layer_size)):
             self.hidden=tf.layers.dense(self.hidden,self.hidden_layer_size[i],
                                         activation=self.activation,name="hl_{}".format(i),reuse=True)
