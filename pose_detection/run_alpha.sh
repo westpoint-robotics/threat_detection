@@ -1,12 +1,13 @@
 #!/bin/bash
 # cd ~/threat_detection/pose_detection; ./run_alpha.sh --indir ~/datasets/FullPistolSkeletons/images/001/ --outdir ~/datasets/FullPistolSkeletons/body_mpii/alpha_results --vis
+# cd ~/threat_detection/pose_detection; ./run_alpha.sh --indir ~/datasets/FullPistolSkeletons/images/001/ --outdir ~/datasets/FullPistolSkeletons/body_coco/alpha_results --vis
 # cd ~/threat_detection/pose_detection; ./run_alpha.sh --indir ~/datasets/Aggressiveness/Low_ordered/images --outdir ~/datasets/Aggressiveness/Low_ordered/alphapose --vis
 
 TEMP=`getopt -o gvliocm:fcds --long gpu:,batch:,video:,list:,indir:,outdir:,format:,mode:,dataset:,vis,sep -n 'wrong args...' -- "$@"`
 
 if [ $? != 0 ] ; then 
-    echo "Terminating..." 
-    exit 1
+	echo "Terminating..." 
+	exit 1
 fi
 
 eval set -- "${TEMP}"
@@ -23,25 +24,26 @@ WORK_PATH="/home/benjamin/AlphaPose"
 MODE="normal"
 VIS=false
 SEP=false 
-DATASET="MPII"
+DATASET="COCO"
+# DATASET="MPII"
 FORMAT="default"
 
 while true ; do
-        case "$1" in
-                -g|--gpu) GPU_ID="$2" ; shift 2;;
-                -b|--batch) BATCH_SIZE="$2" ; shift 2;;
-                -v|--video) VIDEO_FILE=${WORK_PATH}/$2 ; shift 2;;
-                -l|--list) LIST_FILE=${WORK_PATH}/$2 ; shift 2;;
-                -i|--indir) INPUT_PATH=$2 ; shift 2;;
-                -o|--outdir) OUTPUT_PATH=$2 ; shift 2;;
-                -m|--mode) MODE=$2 ; shift 2;;
-                -r|--vis) VIS=true ; shift ;;
-                -q|--sep) SEP=true ; shift ;;
-                -d|--dataset) DATASET=$2 ; shift 2;;
-                -f|--format) FORMAT=$2 ; shift 2;;
-                --) shift ; break ;;
-                *) echo "Internal error!" ; exit 1 ;;
-        esac
+		case "$1" in
+				-g|--gpu) GPU_ID="$2" ; shift 2;;
+				-b|--batch) BATCH_SIZE="$2" ; shift 2;;
+				-v|--video) VIDEO_FILE=${WORK_PATH}/$2 ; shift 2;;
+				-l|--list) LIST_FILE=${WORK_PATH}/$2 ; shift 2;;
+				-i|--indir) INPUT_PATH=$2 ; shift 2;;
+				-o|--outdir) OUTPUT_PATH=$2 ; shift 2;;
+				-m|--mode) MODE=$2 ; shift 2;;
+				-r|--vis) VIS=true ; shift ;;
+				-q|--sep) SEP=true ; shift ;;
+				-d|--dataset) DATASET=$2 ; shift 2;;
+				-f|--format) FORMAT=$2 ; shift 2;;
+				--) shift ; break ;;
+				*) echo "Internal error!" ; exit 1 ;;
+		esac
 done
 
 # Get number of gpu numbers
@@ -50,12 +52,12 @@ GPU_NUM=${#ARRAY[@]}
 
 echo ${#VIDEO_FILE}
 if [ -n "$VIDEO_FILE" ]; then
-    echo "convert video to images..."
-    INPUT_PATH=${WORK_PATH}/video-tmp
-    if ! [ -e "$INPUT_PATH" ]; then
-        mkdir $INPUT_PATH
-    fi
-    ffmpeg -hide_banner -nostats -loglevel 0 -i ${VIDEO_FILE} -r 10 -f image2 ${INPUT_PATH}"/%05d.jpg"
+	echo "convert video to images..."
+	INPUT_PATH=${WORK_PATH}/video-tmp
+	if ! [ -e "$INPUT_PATH" ]; then
+		mkdir $INPUT_PATH
+	fi
+	ffmpeg -hide_banner -nostats -loglevel 0 -i ${VIDEO_FILE} -r 10 -f image2 ${INPUT_PATH}"/%05d.jpg"
 fi
 
 # echo $INPUT_PATH
@@ -76,33 +78,33 @@ echo 'pose estimation with RMPE...'
 
 cd ${WORK_PATH}"/predict"
 if [ "$MODE" = "accurate" ]; then
-    CUDA_VISIBLE_DEVICES=${GPU_ID} th main-alpha-pose-4crop.lua predict ${INPUT_PATH} ${OUTPUT_PATH} ${GPU_NUM} ${BATCH_SIZE} ${DATASET} 
+	CUDA_VISIBLE_DEVICES=${GPU_ID} th main-alpha-pose-4crop.lua predict ${INPUT_PATH} ${OUTPUT_PATH} ${GPU_NUM} ${BATCH_SIZE} ${DATASET} 
 else
-    CUDA_VISIBLE_DEVICES=${GPU_ID} th main-alpha-pose.lua predict ${INPUT_PATH} ${OUTPUT_PATH} ${GPU_NUM} ${BATCH_SIZE} ${DATASET} 
+	CUDA_VISIBLE_DEVICES=${GPU_ID} th main-alpha-pose.lua predict ${INPUT_PATH} ${OUTPUT_PATH} ${GPU_NUM} ${BATCH_SIZE} ${DATASET} 
 fi
 
 cd ${WORK_PATH}"/predict/json"
 if [ "$DATASET" = "COCO" ]; then
-    python2 parametric-pose-nms-COCO.py --outputpath ${OUTPUT_PATH} --sep ${SEP} --format ${FORMAT}
+	python2 parametric-pose-nms-COCO.py --outputpath ${OUTPUT_PATH} --sep ${SEP} --format ${FORMAT}
 else
-    python2 parametric-pose-nms-MPII.py --outputpath ${OUTPUT_PATH} --sep ${SEP} --format ${FORMAT}
+	python2 parametric-pose-nms-MPII.py --outputpath ${OUTPUT_PATH} --sep ${SEP} --format ${FORMAT}
 fi
 
 if $VIS; then
-    echo 'visualization...'
-    if ! [ -e ${OUTPUT_PATH}"/RENDER" ]; then
-        mkdir ${OUTPUT_PATH}"/RENDER"
-    fi
-    python2 json-video.py --outputpath ${OUTPUT_PATH} --inputpath ${INPUT_PATH}
-    if [ -n "$VIDEO_FILE" ]; then
-        echo 'rendering video...'
-        ffmpeg -r 25 -i ${OUTPUT_PATH}"/RENDER/%05d.jpg" -vcodec libx264 -y -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" ${OUTPUT_PATH}"/result_MS.mp4"
-    fi
+	echo 'visualization...'
+	if ! [ -e ${OUTPUT_PATH}"/RENDER" ]; then
+		mkdir ${OUTPUT_PATH}"/RENDER"
+	fi
+	python2 json-video.py --outputpath ${OUTPUT_PATH} --inputpath ${INPUT_PATH}
+	if [ -n "$VIDEO_FILE" ]; then
+		echo 'rendering video...'
+		ffmpeg -r 25 -i ${OUTPUT_PATH}"/RENDER/%05d.jpg" -vcodec libx264 -y -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" ${OUTPUT_PATH}"/result_MS.mp4"
+	fi
 fi
 
 # delete generated video frames
 cd ${WORK_PATH}
 if [ -n "$VIDEO_FILE" ]; then
-    INPUT_PATH=${WORK_PATH}/video-tmp
-    rm -rf $INPUT_PATH
+	INPUT_PATH=${WORK_PATH}/video-tmp
+	rm -rf $INPUT_PATH
 fi
