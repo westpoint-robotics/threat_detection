@@ -39,29 +39,39 @@ def _byteify(data, ignore_dicts = False):
 	# if it's anything else, return it in its original form
 	return data
 
-def poll_skeleton(joints):
+def poll_AP_coco_skeleton(joints):
 	joint_list = [\
-	"   Right Ankle" ,
-	"    Right Knee" ,
-	"     Right Hip" ,
-	"      Left Hip" ,
-	"     Left Knee" ,
-	"    Left Ankle" ,
-	"        Pelvis" ,
-	"         Chest" ,
-	"          Neck" ,
-	"          Pate" ,
-	"   Right Wrist" ,
-	"   Right Elbow" ,
-	"Right Shoulder" ,
+	"   Nose (head)" ,
+	"      Left Eye" ,
+	"     Right Eye" ,
+	"      Left Ear" ,
+	"     Right Ear" ,
 	" Left Shoulder" ,
+	"Right Shoulder" ,
 	"    Left Elbow" ,
-	"    Left Wrist"]
+	"   Right Elbow" ,
+	"    Left Wrist" ,
+	"   Right Wrist" ,
+	"      Left Hip" ,
+	"     Right Hip" ,
+	"     Left Knee" ,
+	"    Right Knee" ,
+	"    Left Ankle" ,
+	"   Right Ankle"]
 
 
 	print("    Joint     :  x ,  y , confidence")
 	for x in range(0,16):
 		print("{0}: {1:3d}, {2:3d}, {3}").format(joint_list[x], int(joints[x][0]), int(joints[x][1]),joints[x][2])
+
+	relevant_indices = [0,5,6,7,8,9,10,11,12]
+	good = 1	
+	for idx in relevant_indices:
+		if (joints[idx][2] < 0.1):
+			print("idx[{}] confidence = {}").format(idx, joints[idx][2])
+			good = 0
+
+	return good
 
 def draw_skeleton(image, joints):
 	pairs = [\
@@ -86,10 +96,83 @@ def draw_skeleton(image, joints):
 		cv2.line(image, (int(joints[pair[0]][0]), int(joints[pair[0]][1])), (int(joints[pair[1]][0]), int(joints[pair[1]][1])), (0,255,0), thickness=1, lineType=8, shift=0) 
 	return image
 
-def show_keypoints_on_image(image, joints):
+def draw_boxes(image, joints, gun_box):
+	jointmax = np.amax(joints, axis=0)
+	jointmin = np.amin(joints, axis=0)
+
+	# jointmin[0] (x)
+	# jointmin[1] (y)
+
+	cv_img_height = image.shape[0]
+	cv_img_width = image.shape[1]
+
+	scale = 0.1
+
+	if ((jointmin[0] - scale*cv_img_width) <0):
+		joint_min_x = 0
+	else:
+		joint_min_x = int( jointmin[0] - scale*cv_img_width )
+
+	if ((jointmin[1] - scale*cv_img_height) <0):
+		joint_min_y = 0
+	else:
+		joint_min_y = int( jointmin[1] - scale*cv_img_height )
+
+
+	if ((jointmax[0] + scale*cv_img_width) > cv_img_width):
+		joint_max_x = cv_img_width
+	else:
+		joint_max_x = int( jointmax[0] + scale*cv_img_width )
+
+	if ((jointmax[1] + scale*cv_img_height) > cv_img_height):
+		joint_max_y = cv_img_height
+	else:
+		joint_max_y = int( jointmax[1] + scale*cv_img_height )
+
+
+	cv2.line(image, (joint_min_x, joint_min_y), (joint_min_x, joint_max_y), (0,255,0), thickness=1, lineType=8, shift=0) 
+	cv2.line(image, (joint_min_x, joint_max_y), (joint_max_x, joint_max_y), (0,255,0), thickness=1, lineType=8, shift=0) 
+	cv2.line(image, (joint_max_x, joint_max_y), (joint_max_x, joint_min_y), (0,255,0), thickness=1, lineType=8, shift=0) 
+	cv2.line(image, (joint_min_x, joint_min_y), (joint_max_x, joint_min_y), (0,255,0), thickness=1, lineType=8, shift=0) 
+
+	cv2.line(image, (gun_box["xmin"], gun_box["ymin"]), (gun_box["xmin"], gun_box["ymax"]), (255,0,0), thickness=1, lineType=8, shift=0) 
+	cv2.line(image, (gun_box["xmin"], gun_box["ymax"]), (gun_box["xmax"], gun_box["ymax"]), (255,0,0), thickness=1, lineType=8, shift=0) 
+	cv2.line(image, (gun_box["xmax"], gun_box["ymax"]), (gun_box["xmax"], gun_box["ymin"]), (255,0,0), thickness=1, lineType=8, shift=0) 
+	cv2.line(image, (gun_box["xmin"], gun_box["ymin"]), (gun_box["xmax"], gun_box["ymin"]), (255,0,0), thickness=1, lineType=8, shift=0) 
+
+	return image
+
+def draw_AP_coco_skeleton(image, joints):
+	pairs = [\
+	# left arm
+	(0,5), 
+	(5,7), 
+	(7,9), 
+	# right arm
+	(0,6), 
+	(6,8), 
+	(8,10), 
+	(5,11), # left body
+	(6,12)] #right body
+
+
+	for pair in pairs:
+		cv2.line(image, (int(joints[pair[0]][0]), int(joints[pair[0]][1])), (int(joints[pair[1]][0]), int(joints[pair[1]][1])), (0,255,0), thickness=1, lineType=8, shift=0) 
+
+	return image
+
+def show_src_image(image):
+	cv2.namedWindow('src image',cv2.WINDOW_NORMAL)
+	cv2.imshow('src image',image)
+	cv2.resizeWindow('src image', image.shape[1]*4,image.shape[0]*4)
+
+def show_keypoints_on_image(image, joints, gun_box):
+	show_src_image(image)
 	joint_image = image.copy()
-	joint_image = draw_skeleton(image, joints)
-	poll_skeleton(joints)
+	joint_image = draw_AP_coco_skeleton(image, joints)
+	# joint_image = draw_boxes(joint_image, joints, gun_box)
+	good_skeleton = poll_AP_coco_skeleton(joints)
+
 	for joint in joints:
 		if joint.all():
 			# print("joint (x,y): ({}, {})").format(joint[0], joint[1])
@@ -108,14 +191,17 @@ def show_keypoints_on_image(image, joints):
 	# 1: 49 # 3: 51 # 5: 53 # 7: 55 # 0: 48
 	cv2.namedWindow('joints',cv2.WINDOW_NORMAL)
 	while(1):
+		if (not good_skeleton):
+			threat = 0
+			break
+
 		print("classify image as either (1)high, (3)medium, (5)mild, (7)low, or (0)zero")
 		print("  (1)high:   brandished pistol, aimed position, discharge imminent")
 		print("  (3)medium: weapon drawn from holster, but not held in firing position")
-		print("  (5)mild:   pistol is holstered, but hand is near or touching the weapon (quickdraw)")
 		print("  (7)low:    pistol is present in the frame, but the hands of the individual is not near a drawing position")
 		print("  (0)zero:   pistol is erroneously associated with skeleton, or skeleton is poorly formed such that the association is bad")
 		cv2.imshow('joints',joint_image)
-		cv2.resizeWindow('joints', joint_image.shape[0]*4,joint_image.shape[0]*4)
+		cv2.resizeWindow('joints', joint_image.shape[1]*4,joint_image.shape[0]*4)
 		
 		k = cv2.waitKey(0)
 		if k==122: # Esc key to stop
@@ -127,9 +213,6 @@ def show_keypoints_on_image(image, joints):
 		if k==51: # 3 = medium
 			threat = 3
 			break
-		if k==53: # 5 = mild
-			threat = 5
-			break
 		if k==55: # 7 = low
 			threat = 7
 			break
@@ -139,6 +222,7 @@ def show_keypoints_on_image(image, joints):
 		else:
 			print k
 	cv2.destroyWindow("joints")
+	cv2.destroyWindow("src image")
 	return threat, joint_image
 
 def check_pistol_cropped_location(potential_threat, cv_image, crop_image_offset):
@@ -181,10 +265,11 @@ def box_overlap(human_box, gun_box):
 	y_bool = range_overlap(human_box["ymin"], human_box["ymax"], gun_box["ymin"], gun_box["ymax"])
 	return x_bool and y_bool
 
-def joint_overlap(bounding_box, jointmin, jointmax):
+def joint_overlap(bounding_box, jointmin, jointmax, cv_img_width, cv_img_height):
 	# Overlapping rectangles overlap both horizontally & vertically
-	x_bool = range_overlap(bounding_box["xmin"], bounding_box["xmax"], jointmin[0]+50, jointmax[0]+50)
-	y_bool = range_overlap(bounding_box["ymin"], bounding_box["ymax"], jointmin[1]-50, jointmax[1]-50)
+	scale = 0.1
+	x_bool = range_overlap(bounding_box["xmin"], bounding_box["xmax"], jointmin[0]-scale*cv_img_width, jointmax[0]+scale*cv_img_width)
+	y_bool = range_overlap(bounding_box["ymin"], bounding_box["ymax"], jointmin[1]-scale*cv_img_height, jointmax[1]+scale*cv_img_height)
 	return x_bool and y_bool
 
 def range_overlap(a_min, a_max, b_min, b_max):
@@ -197,10 +282,13 @@ def keep_going():
 		continue_screen = cv2.imread("continue_screen.jpg",cv2.IMREAD_COLOR) #load image in cv2
 		cv2.imshow("Continue?",continue_screen)
 		k = cv2.waitKey(0)
-		if k==43: # yes, keep going
+		if k==13: # yes, keep going
 			cv2.destroyWindow("Continue?")
 			return True
-		if k==45: # no, stop
+		if k==121: # yes, keep going
+			cv2.destroyWindow("Continue?")
+			return True
+		if k==110: # no, stop
 			cv2.destroyWindow("Continue?")
 			return False
 		else:
@@ -210,7 +298,7 @@ def main():
 	print("\n\n\n\n\n\n\n")
 
 	# Setup config
-	with open("alphapose.yaml", 'r') as ymlfile:
+	with open("alphapose_pickles.yaml", 'r') as ymlfile:
 		if sys.version_info[0] > 2:
 			cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
 		else:
@@ -219,6 +307,8 @@ def main():
 	if (cfg['model_pose'] == "BODY_25"):
 		subimage_folder = cfg['subimage_body25']
 	elif (cfg['model_pose'] == "MPI"):
+		subimage_folder = cfg['subimage_mpii']
+	elif (cfg['model_pose'] == "ALPHA_COCO"):
 		subimage_folder = cfg['subimage_mpii']
 	else:
 		print("Incorrect setting for skeletons")
@@ -234,6 +324,11 @@ def main():
 	elif (cfg['model_pose'] == "MPI"):
 		x = np.empty((1,10,2))
 		rele_dexes = [1,2,3,4,5,6,7,8,11,14]		
+		right_elbow = 3
+		right_wrist = 4
+	elif (cfg['model_pose'] == "ALPHA_COCO"):
+		x = np.empty((1,9,2))
+		rele_dexes = [0,5,6,7,8,9,10,11,12]		
 		right_elbow = 3
 		right_wrist = 4
 	else:
@@ -297,7 +392,7 @@ def main():
 				pistol_boxes = []
 
 				joints = np.asarray(entry['keypoints'])
-				joints = np.reshape(joints, (16, 3))
+				joints = np.reshape(joints, (17, 3))
 
 				jointmax = np.amax(joints, axis=0)
 				jointmin = np.amin(joints, axis=0)
@@ -329,13 +424,14 @@ def main():
 
 				for pistol_box in pistol_boxes:
 					cv_image = cv2.imread(current_image,cv2.IMREAD_COLOR) #load image in cv2
-					if joint_overlap(pistol_box, jointmin, jointmax):
+					if joint_overlap(pistol_box, jointmin, jointmax, cv_img_width, cv_img_height):
 						# add "joint" for gun
 						pistol_location = ([pistol_box['center_x'], pistol_box['center_y'], 0])
+						cv_image = draw_boxes(cv_image, joints, pistol_box)
 						# print("pistol_location: {}").format(pistol_location)
 						pistol_joints = np.vstack((joints,pistol_location))
 						# draw joints on person and ask for input on classification
-						threat_class, joint_image = show_keypoints_on_image(cv_image, pistol_joints)
+						threat_class, joint_image = show_keypoints_on_image(cv_image, pistol_joints, pistol_box)
 						# print("pistol pixel center: {}, {}").format(pistol_box['center_x'], pistol_box['center_y'])
 						# print("joints 16x3: {}").format(joints)
 						print("threat_class: {}").format(threat_class)

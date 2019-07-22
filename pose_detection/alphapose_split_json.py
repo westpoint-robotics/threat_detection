@@ -44,7 +44,7 @@ def main():
 	print("\n\n\n\n\n\n\n")
 
 	# Setup config
-	with open("block_pickle_alphapose_json.yaml", 'r') as ymlfile:
+	with open("alphapose_split_json.yaml", 'r') as ymlfile:
 		if sys.version_info[0] > 2:
 			cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
 		else:
@@ -53,24 +53,32 @@ def main():
 
 	jsondata = json_load_byteified(open(cfg['json_file']))
 
-	json_block_path = cfg['pickle_blocks']
-
-	block_size = 25
-	number_of_blocks = len(jsondata)/block_size
+	json_block_path = cfg['json_blocks']
 
 
-	for n in range(0,number_of_blocks):
-		# print("block number: {}").format(n)
-		block_filename = json_block_path + "json_block_{0:03d}.pkl".format(n)
-		print("block filename: {}").format(block_filename)
-		json_block = []
+	n=0
+	for entry in jsondata:
+		jsontext = ('[\n{{\n"image_id": "{0}", \n"category_id": {1}, \n"keypoints": {2}, \n"score": {3}\n}}\n]').format(entry["image_id"], entry["category_id"], entry["keypoints"], entry["score"])
+		# print(jsontext)
+		json_filename = cfg['json_files']+"json_{0:06d}.json".format(n)
+		json_file = open(json_filename,"w") 
+		json_file.write(jsontext) 
+		# print(json_filename)
+		json_file.close() 
+		n+=1
 
-		for entry in range(n*block_size, n*block_size+block_size):
-			json_block.append(jsondata[entry])
-			# print("\n jsondata[{}]: {}").format(entry, jsondata[entry])
+	# for n in range(0,number_of_blocks):
+	# 	# print("block number: {}").format(n)
+	# 	block_filename = json_block_path + "json_block_{0:03d}.pkl".format(n)
+	# 	print("block filename: {}").format(block_filename)
+	# 	json_block = []
 
-		with open(block_filename, 'wb') as handle:
-			pickle.dump(json_block, handle, protocol=pickle.HIGHEST_PROTOCOL)
+	# 	for entry in range(n*block_size, n*block_size+block_size):
+	# 		json_block.append(jsondata[entry])
+	# 		# print("\n jsondata[{}]: {}").format(entry, jsondata[entry])
+
+	# 	with open(block_filename, 'wb') as handle:
+	# 		pickle.dump(json_block, handle, protocol=pickle.HIGHEST_PROTOCOL)
 	
 
 

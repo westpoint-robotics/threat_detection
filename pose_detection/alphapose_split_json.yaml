@@ -1,6 +1,7 @@
 # json_file: /home/benjamin/datasets/FullPistolSkeletons/body_mpii/alpha_results/POSE/alpha-pose-results.json
 json_file: /home/benjamin/datasets/FullPistolSkeletons/body_coco/alpha_results/POSE/alpha-pose-results.json
 json_blocks: /home/benjamin/datasets/FullPistolSkeletons/body_coco/alpha_results/Poses/
+json_files: /home/benjamin/datasets/FullPistolSkeletons/body_coco/alpha_results/individual_jsons/
 pickle_blocks: /home/benjamin/datasets/FullPistolSkeletons/body_coco/pickle_blocks/
 mpii_skeleton_root: /home/benjamin/datasets/FullPistolSkeletons/body_coco/skeleton_threat/
 
@@ -15,7 +16,7 @@ subimage_mpii: /home/benjamin/datasets/FullPistolSkeletons/body_coco/
 save_skeltons: true
 
 # model_pose: BODY_25
-model_pose: MPI
+# model_pose: MPI
 # DEFINE_string(model_pose, 
 # "BODY_25", "Model to be used. E.g., 
 # `COCO` (18 keypoints), 

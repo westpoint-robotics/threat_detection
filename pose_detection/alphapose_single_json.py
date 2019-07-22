@@ -43,7 +43,8 @@ def _byteify(data, ignore_dicts = False):
 
 def show_keypoints_on_image(image, joints):
 	joint_image = image.copy()
-	joint_image = draw_skeleton(image, joints)
+	# joint_image = draw_skeleton(image, joints)
+	
 	for joint in joints:
 		if joint.all():
 			# print("joint (x,y): ({}, {})").format(joint[0], joint[1])
@@ -130,7 +131,18 @@ def main():
 
 
 	jsondata = json_load_byteified(open(cfg['json_file']))
-	cv_image = cv2.imread(cfg['src_image'] ,cv2.IMREAD_COLOR) #load image in cv2
+
+	mode = "COCO"
+
+	# try:
+	# 	cv_image = cv2.imread(cfg['src_image'] ,cv2.IMREAD_COLOR) #load image in cv2
+	# except:
+	# 	print("An exception occurred")
+
+	try:
+		cv_image = cv2.imread(cfg['src_images']+jsondata[0]['image_id'] ,cv2.IMREAD_COLOR) #load image in cv2
+	except:
+		print("An exception occurred")
 
 	# print("jsondata : {}").format(jsondata)
 	print("jsondata[0]['image_id'] : {}").format(jsondata[0]['image_id'])
@@ -139,14 +151,17 @@ def main():
 	# print("jsondata[0]['score'] : {}").format(jsondata[0]['score'])
 
 	joints = np.asarray(jsondata[0]['keypoints'])
-	joints = np.reshape(joints, (16, 3))
+	if mode == "MPII":
+		joints = np.reshape(joints, (16, 3)) # alphapose MPII
+	if mode == "COCO":
+		joints = np.reshape(joints, (17, 3)) # alphapose MPII
 	jsondata[0]['joints'] = joints
 
 	print("jsondata[0]['joints'] : {}").format(jsondata[0]['joints'])
 
 
 	keypoint_image = show_keypoints_on_image(cv_image, joints)
-	cv2.imwrite(cfg['save_image'], keypoint_image) # save skeleton image
+	# cv2.imwrite(cfg['save_image'], keypoint_image) # save skeleton image
 
 if __name__ == "__main__":
 	main()

@@ -14,7 +14,7 @@ def main():
 	print("\n\n\n\n\n\n\n")
 
 	# Setup config
-	with open("alphapose.yaml", 'r') as ymlfile:
+	with open("move_alphapose.yaml", 'r') as ymlfile:
 		if sys.version_info[0] > 2:
 			cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
 		else:
@@ -22,7 +22,7 @@ def main():
 
 	# list of pickle folders
 	pickle_root = cfg['pickle_blocks']
-	mpii_bulk_root = cfg['mpii_skeleton_root']
+	skeleton_root = cfg['skeleton_root']
 	threat_order = ["1_high", "2_medium", "3_mild", "4_low"]
 	threat_prefix = ["high_threat", "medium_threat", "mild_threat", "low_threat"]
 	number_of_bulk_skeletons = [0,0,0,0]
@@ -43,12 +43,12 @@ def main():
 	
 		for threat_index in range(0,len(threat_order)):
 			threat_folder = ("{}{}/").format(pickle_folder, threat_order[threat_index])
-			bulk_destination = ("{}{}/").format(mpii_bulk_root, threat_order[threat_index])
+			bulk_destination = ("{}{}/").format(skeleton_root, threat_order[threat_index])
 			# print(" \n\n ")
 			# print("     threat_folder: {}").format(threat_folder)
 			# print("  bulk_destination: {}").format(bulk_destination)
 			image_folder = ("{}{}/").format(pickle_images, threat_order[threat_index])
-			images_destination = ("{}{}/images/").format(mpii_bulk_root, threat_order[threat_index])
+			images_destination = ("{}{}/images/").format(skeleton_root, threat_order[threat_index])
 			# print("      image_folder: {}").format(image_folder)
 			# print("images_destination: {}").format(images_destination)
 			for (dirpath, dirnames, skeleton_files) in walk(threat_folder):
@@ -59,12 +59,12 @@ def main():
 				new_name = ("{0}skeletons/{1}_{2:03d}.npy").format(bulk_destination, threat_prefix[threat_index], number_of_bulk_skeletons[threat_index])
 				# print("current_name:  {0}").format(current_name)
 				# print("new_name    :  {0}").format(new_name)
-				# copyfile(current_name, new_name) 
+				copyfile(current_name, new_name) 
 				current_name = ("{0}{1}_{2:03d}.txt").format(threat_folder, threat_prefix[threat_index], skeleton_index)
 				new_name = ("{0}skeletons/{1}_{2:03d}.txt").format(bulk_destination, threat_prefix[threat_index], number_of_bulk_skeletons[threat_index])
 				# print("current_name:  {0}").format(current_name)
 				# print("new_name    :  {0}").format(new_name)
-				# copyfile(current_name, new_name) 
+				copyfile(current_name, new_name) 
 				current_name = ("{0}{1}_{2:03d}.jpg").format(image_folder, threat_prefix[threat_index], skeleton_index)
 				new_name = ("{0}{1}_{2:03d}.jpg").format(images_destination, threat_prefix[threat_index], number_of_bulk_skeletons[threat_index])
 				# print("current_name:  {0}").format(current_name)

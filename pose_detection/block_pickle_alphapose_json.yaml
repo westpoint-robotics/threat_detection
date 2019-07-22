@@ -1,0 +1,4 @@
+# json_file: /home/benjamin/datasets/FullPistolSkeletons/body_mpii/alpha_results/POSE/alpha-pose-results.json
+json_file: /home/benjamin/datasets/FullPistolSkeletons/body_coco/alpha_results/POSE/alpha-pose-results.json
+json_blocks: /home/benjamin/datasets/FullPistolSkeletons/body_coco/alpha_results/Poses/
+

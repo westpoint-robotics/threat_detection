@@ -1,4 +1,7 @@
-json_file: /home/benjamin/threat_detection/pose_detection/results/rick_mpii.json
-src_image: /home/benjamin/threat_detection/pose_detection/results/rick.jpg
-save_image: /home/benjamin/threat_detection/pose_detection/results/rick_mpii.png
+json_file: /home/benjamin/datasets/FullPistolSkeletons/body_coco/alpha_results/individual_jsons/json_000000.json
+src_images: /home/benjamin/datasets/FullPistolSkeletons/images/001/
+
+# json_file: /home/benjamin/threat_detection/pose_detection/results/rick_mpii.json
+# src_image: /home/benjamin/threat_detection/pose_detection/results/rick.jpg
+# save_image: /home/benjamin/threat_detection/pose_detection/results/rick_mpii.png
 
